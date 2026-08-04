@@ -7,6 +7,7 @@ import { pathToFileURL } from "node:url";
 
 const hermesHome = process.env.HERMES_HOME || "/opt/data";
 const envPath = join(hermesHome, ".env");
+const configPath = join(hermesHome, "config.yaml");
 const workspacePath = join(hermesHome, "workspace");
 const repositoryPath = join(workspacePath, "first-mythos-cup");
 const syncKeys = [
@@ -40,6 +41,48 @@ export function parseEnv(text) {
 
 export function quoteEnv(value) {
   return `"${value.replaceAll("\\", "\\\\").replaceAll('"', '\\"').replaceAll("\n", "\\n")}"`;
+}
+
+export function renderConfiguredModel(config, model) {
+  if (!/^[A-Za-z0-9._:/-]+$/.test(model)) {
+    throw new Error("HERMES_MODEL contains unsupported characters.");
+  }
+
+  const lines = config.split(/\r?\n/);
+  let inModelSection = false;
+  let modelSectionIndex = -1;
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (/^model:\s*(?:#.*)?$/.test(line)) {
+      inModelSection = true;
+      modelSectionIndex = index;
+      continue;
+    }
+    if (inModelSection && /^\S/.test(line)) {
+      lines.splice(index, 0, `  default: ${model}`);
+      return lines.join("\n");
+    }
+    if (inModelSection && /^\s+default:\s*/.test(line)) {
+      lines[index] = `${line.match(/^\s+/)?.[0] ?? "  "}default: ${model}`;
+      return lines.join("\n");
+    }
+  }
+
+  if (inModelSection) {
+    lines.splice(modelSectionIndex + 1, 0, `  default: ${model}`);
+    return lines.join("\n");
+  }
+
+  return `model:\n  default: ${model}\n${config}`;
+}
+
+export function persistConfiguredModel(environment = process.env) {
+  const model = environment.HERMES_MODEL;
+  if (!model || !existsSync(configPath)) return;
+  const existing = readFileSync(configPath, "utf8");
+  const updated = renderConfiguredModel(existing, model);
+  if (updated !== existing) writeFileSync(configPath, updated, { encoding: "utf8", mode: 0o600 });
 }
 
 export function persistEnvironment(environment = process.env) {
@@ -91,6 +134,7 @@ export function persistEnvironment(environment = process.env) {
 
 export function main() {
   persistEnvironment();
+  persistConfiguredModel();
   mkdirSync(workspacePath, { recursive: true });
   if (!existsSync(join(repositoryPath, ".git"))) {
     const clone = spawnSync(

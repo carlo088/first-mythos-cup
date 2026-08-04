@@ -8,7 +8,7 @@
     "start": "next start",
     "hermes:fly:secrets": "node --env-file=.env.local scripts/fly-hermes-secrets.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run && node --test hermes/tests/clients_test.mjs"
+    "test": "vitest run && node --test hermes/tests/*.mjs"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
