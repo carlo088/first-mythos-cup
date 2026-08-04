@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FleetMap, type MappedVessel } from "@/components/fleet-map";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import { FLEET, type FleetVessel } from "@/lib/vessels";
 
@@ -98,18 +99,28 @@ export function FleetDashboard() {
 
   useEffect(() => { void loadFleet(); }, [loadFleet]);
 
+  const mappedVessels = useMemo(() => FLEET.flatMap((vessel): MappedVessel[] => {
+    const state = states[vessel.mmsi];
+    return state?.status === "ready" ? [{ vessel, position: state.position }] : [];
+  }), [states]);
+
   return (
     <section className="fleet-section" aria-labelledby="fleet-title">
       <div className="section-heading">
         <div>
-          <span className="section-number">01 / FIRST 36 FLEET</span>
-          <h3 id="fleet-title">Race position</h3>
+          <span className="section-number">01 / FLEET MAP</span>
+          <h3 id="fleet-title">Last known positions</h3>
         </div>
         <button type="button" onClick={() => void loadFleet()} disabled={refreshing}>
           <span className={refreshing ? "spin" : ""}>↻</span> {refreshing ? "Loading…" : "Reload snapshot"}
         </button>
       </div>
       <div className="cost-note">SAVED AIS SNAPSHOT · ZERO PROVIDER CALLS · NO BACKGROUND POLLING</div>
+      <FleetMap vessels={mappedVessels} />
+      <div className="detail-heading">
+        <span className="section-number">02 / FIRST 36 FLEET</span>
+        <h3>Vessel reports</h3>
+      </div>
       <div className="fleet-grid">
         {FLEET.map((vessel) => <VesselCard key={vessel.mmsi} vessel={vessel} state={states[vessel.mmsi]} />)}
       </div>
