@@ -2,6 +2,17 @@ FROM nousresearch/hermes-agent:latest
 
 USER root
 
+ARG FLYCTL_VERSION=0.4.78
+ARG VERCEL_CLI_VERSION=48.1.0
+
+# Persistent-agent operations: source control plus Vercel/Fly deployment tools.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl git gh \
+    && curl -fsSL "https://github.com/superfly/flyctl/releases/download/v${FLYCTL_VERSION}/flyctl_${FLYCTL_VERSION}_Linux_x86_64.tar.gz" \
+      | tar -xz -C /usr/local/bin flyctl \
+    && npm install --global "vercel@${VERCEL_CLI_VERSION}" \
+    && rm -rf /var/lib/apt/lists/*
+
 # First-boot seeds. Runtime state lives on the Fly volume at /opt/data.
 COPY hermes/config.yaml /opt/hermes/cli-config.yaml.example
 COPY hermes/SOUL.md /opt/hermes/docker/SOUL.md

@@ -5,7 +5,7 @@ version: 1.0.0
 author: First Mythos Cup
 platforms: [linux]
 prerequisites:
-  commands: [node, hermes]
+  commands: [node, npm, git, gh, vercel, flyctl, hermes]
 ---
 
 # First Mythos Cup operations
@@ -24,6 +24,18 @@ the race application, and Telegram user access.
 
 The application endpoint is the default source for positions. It currently
 serves the saved mock snapshot and makes zero paid provider requests.
+
+## Persistent development environment
+
+The repository checkout lives at
+`/opt/data/workspace/first-mythos-cup` on the persistent Fly volume. Treat it as
+the working source of truth and synchronize it with GitHub before starting new
+work. Read `references/operations.md` before changing, committing, deploying,
+or modifying production configuration.
+
+The owner may no longer have access to the original development computer.
+Never depend on that computer, its Codex session, or uncommitted local files.
+Record durable operational knowledge in this repository and push it to GitHub.
 
 ## Provider policy
 

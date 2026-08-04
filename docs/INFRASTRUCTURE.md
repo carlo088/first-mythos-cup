@@ -32,3 +32,6 @@ This file contains identifiers and status only. Secret values live exclusively i
 - Fly uses least privilege: install only OpenAI, Telegram, and GFW credentials. MyShipTracking, AISstream, and the Supabase database password remain out of the agent runtime until a feature explicitly requires them.
 - Telegram adapter: Hermes' native gateway with persistent pairing authorization.
 - Gateway status: running and verified with a direct model response. Telegram remains disabled until `TELEGRAM_BOT_TOKEN` and the owner's numeric `TELEGRAM_ALLOWED_USERS` value are supplied.
+- Autonomous operations: the Fly volume contains a persistent Git checkout;
+  the image includes GitHub, Vercel, and Fly tooling. Scoped deployment tokens
+  must be configured before Hermes can publish without the original computer.

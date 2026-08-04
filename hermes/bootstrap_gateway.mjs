@@ -2,11 +2,13 @@
 
 import { closeSync, existsSync, fsyncSync, mkdirSync, openSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { pathToFileURL } from "node:url";
 
 const hermesHome = process.env.HERMES_HOME || "/opt/data";
 const envPath = join(hermesHome, ".env");
+const workspacePath = join(hermesHome, "workspace");
+const repositoryPath = join(workspacePath, "first-mythos-cup");
 const syncKeys = [
   "OPENAI_API_KEY",
   "TELEGRAM_BOT_TOKEN",
@@ -14,6 +16,13 @@ const syncKeys = [
   "APP_URL",
   "HERMES_MODEL",
   "VESSEL_DATA_MODE",
+  "GITHUB_TOKEN",
+  "VERCEL_TOKEN",
+  "VERCEL_ORG_ID",
+  "VERCEL_PROJECT_ID",
+  "FLY_API_TOKEN",
+  "SUPABASE_ACCESS_TOKEN",
+  "SUPABASE_PROJECT_REF",
 ];
 const seedOnceKeys = ["TELEGRAM_ALLOWED_USERS"];
 
@@ -82,7 +91,15 @@ export function persistEnvironment(environment = process.env) {
 
 export function main() {
   persistEnvironment();
-  mkdirSync(join(hermesHome, "workspace"), { recursive: true });
+  mkdirSync(workspacePath, { recursive: true });
+  if (!existsSync(join(repositoryPath, ".git"))) {
+    const clone = spawnSync(
+      "git",
+      ["clone", "--branch", "main", "--single-branch", "https://github.com/carlo088/first-mythos-cup.git", repositoryPath],
+      { stdio: "inherit" },
+    );
+    if (clone.status !== 0) console.error("Repository bootstrap failed; Hermes will retry on its next restart.");
+  }
   const child = spawn("hermes", ["gateway", "run"], { stdio: "inherit" });
   for (const signal of ["SIGINT", "SIGTERM"]) {
     process.on(signal, () => child.kill(signal));

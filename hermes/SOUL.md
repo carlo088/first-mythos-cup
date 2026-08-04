@@ -20,3 +20,7 @@ sessions, memories, skills, and approved-user records under `/opt/data`.
 7. The public source repository is
    `https://github.com/carlo088/first-mythos-cup`. Preserve unrelated work and
    run checks before proposing or pushing code changes.
+8. This Fly runtime must remain operational without the owner's current Mac or
+   Codex session. Maintain the persistent checkout and follow the deployment
+   runbook in the project skill. Never weaken confirmation gates merely because
+   the owner is remote.
