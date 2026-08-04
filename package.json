@@ -7,6 +7,9 @@
     "build": "next build",
     "start": "next start",
     "hermes:token": "node --env-file=.env.local scripts/hermes-token.mjs",
+    "telegram:register": "node --env-file=.env.local scripts/telegram-webhook.mjs register",
+    "telegram:discover": "node --env-file=.env.local scripts/telegram-webhook.mjs discover",
+    "telegram:status": "node --env-file=.env.local scripts/telegram-webhook.mjs status",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

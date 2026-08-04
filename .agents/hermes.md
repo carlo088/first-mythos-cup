@@ -17,6 +17,8 @@ Hermes supports the First Mythos Cup vessel-tracking application.
 - AISstream: configured but currently unavailable; do not select it without a fresh health check.
 - Cost rule: one MyShipTracking simple lookup equals one credit. Never add background polling or reduce the 60-second minimum cache without calculating and reporting the daily/monthly credit impact.
 - Runtime: `src/lib/hermes.ts`; HTTP route: `GET/POST /api/hermes`. POST is bearer-authenticated.
+- Production host: Vercel. Telegram webhook: `POST /api/telegram/webhook`, documented in `docs/TELEGRAM.md`.
+- Fly is not used for the webhook deployment; reserve it for a future continuous worker if one becomes necessary.
 
 ## Key rotation
 

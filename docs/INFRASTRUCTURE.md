@@ -5,9 +5,9 @@ This file contains identifiers and status only. Secret values live exclusively i
 ## Source and hosting
 
 - GitHub: <https://github.com/carlo088/first-mythos-cup> — live on `main`.
-- Vercel: blocked. The only available `longe-vita` team is suspended and returns HTTP 402 until billing is reactivated at <https://vercel.com/teams/longe-vita/settings/billing>.
+- Vercel: live at <https://first-mythos-cup.vercel.app>. It hosts the dashboard, vessel API, Hermes, and Telegram webhook.
 - Local application: <http://localhost:3000> while the development server is running.
-- Fly.io: support/evaluation is pending. Use only if a continuously running ingestion worker becomes necessary.
+- Fly.io: not used for the webhook architecture. Reserve it for a future continuously running ingestion worker if necessary.
 
 ## Supabase
 
@@ -29,4 +29,4 @@ This file contains identifiers and status only. Secret values live exclusively i
 - Hermes runtime: `src/lib/hermes.ts`, exposed through `GET/POST /api/hermes`.
 - Hermes model identifier is configured with `HERMES_MODEL` in `.env.local`.
 - Hermes API access is configured with `OPENAI_API_KEY` in `.env.local`.
-- Status: the `gpt-5.6-luna` key/model call is verified locally; public deployment is blocked by the Vercel team suspension.
+- Telegram adapter: `src/lib/telegram.ts`, exposed through `GET/POST /api/telegram/webhook`.

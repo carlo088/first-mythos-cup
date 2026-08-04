@@ -22,9 +22,11 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 - [x] Initial public dashboard with manual refresh and data-age indicators.
 - [x] Persist the saved snapshot in Supabase with an idempotent migration and public-read RLS.
 - [x] Add the authenticated Hermes service at `GET/POST /api/hermes` using `gpt-5.6-luna`.
+- [x] Add a secret-validated, chat-allowlisted Telegram webhook and registration tooling.
 - [ ] Add a nautical map and course/race geometry.
 - [ ] Add a scheduled ingestion worker only after a call-budget calculation is approved.
-- [ ] Reactivate Vercel team billing, then connect GitHub and add only the required server-side environment variables. Current CLI deployment is blocked with HTTP 402.
+- [x] Connect GitHub to Vercel and deploy the dashboard/API at `first-mythos-cup.vercel.app`.
+- [ ] Add Telegram production variables, register the webhook, and verify an end-to-end Telegram reply.
 - [ ] Add observability for upstream calls, failures, cache effectiveness, and estimated credits.
 - [ ] Evaluate Fly.io only if a continuously running ingestion worker is needed.
 
