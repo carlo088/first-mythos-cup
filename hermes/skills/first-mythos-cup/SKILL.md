@@ -5,7 +5,7 @@ version: 1.0.0
 author: First Mythos Cup
 platforms: [linux]
 prerequisites:
-  commands: [python3, hermes]
+  commands: [node, hermes]
 ---
 
 # First Mythos Cup operations
@@ -42,13 +42,13 @@ Read `references/providers.md` before any direct provider call.
 Safe identity lookup:
 
 ```bash
-python3 "${HERMES_HOME:-$HOME/.hermes}/skills/project/first-mythos-cup/scripts/gfw_vessels.py" search 240576800
+node "${HERMES_HOME:-$HOME/.hermes}/skills/project/first-mythos-cup/scripts/gfw_vessels.mjs" search 240576800
 ```
 
 Paid MyShipTracking lookup, only after explicit owner authorization:
 
 ```bash
-python3 "${HERMES_HOME:-$HOME/.hermes}/skills/project/first-mythos-cup/scripts/myshiptracking_vessel.py" 240576800 --spend-credit
+node "${HERMES_HOME:-$HOME/.hermes}/skills/project/first-mythos-cup/scripts/myshiptracking_vessel.mjs" 240576800 --spend-credit
 ```
 
 The MyShipTracking credential is intentionally not installed on Fly while mock
