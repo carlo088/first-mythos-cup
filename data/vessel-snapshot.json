@@ -1,0 +1,42 @@
+{
+  "capturedAt": "2026-08-04T21:20:00Z",
+  "source": "Saved MyShipTracking readings",
+  "vessels": [
+    {
+      "vesselName": "ISERA",
+      "mmsi": "247520340",
+      "imo": null,
+      "vesselType": 9,
+      "lat": 37.6953,
+      "lng": 24.06022,
+      "course": null,
+      "speedKnots": 0,
+      "navigationStatus": 15,
+      "receivedAt": "2026-07-21T12:00:00Z"
+    },
+    {
+      "vesselName": "FIZZY",
+      "mmsi": "240576800",
+      "imo": null,
+      "vesselType": 9,
+      "lat": 37.69558,
+      "lng": 24.05911,
+      "course": null,
+      "speedKnots": 0,
+      "navigationStatus": 5,
+      "receivedAt": "2026-08-04T19:19:23Z"
+    },
+    {
+      "vesselName": "TIAMAT",
+      "mmsi": "240608700",
+      "imo": null,
+      "vesselType": 9,
+      "lat": 37.93695,
+      "lng": 23.6594,
+      "course": null,
+      "speedKnots": 0,
+      "navigationStatus": 15,
+      "receivedAt": "2026-06-30T12:00:00Z"
+    }
+  ]
+}

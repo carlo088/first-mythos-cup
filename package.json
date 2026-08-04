@@ -1,0 +1,25 @@
+{
+  "name": "first-mythos-cup",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "hermes:token": "node --env-file=.env.local scripts/hermes-token.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "next": "^16.3.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.17.1",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
