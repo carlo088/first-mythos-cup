@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "hermes:token": "node --env-file=.env.local scripts/hermes-token.mjs",
-    "telegram:register": "node --env-file=.env.local scripts/telegram-webhook.mjs register",
-    "telegram:discover": "node --env-file=.env.local scripts/telegram-webhook.mjs discover",
-    "telegram:status": "node --env-file=.env.local scripts/telegram-webhook.mjs status",
+    "hermes:fly:secrets": "node --env-file=.env.local scripts/fly-hermes-secrets.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },

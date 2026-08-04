@@ -5,9 +5,9 @@ This file contains identifiers and status only. Secret values live exclusively i
 ## Source and hosting
 
 - GitHub: <https://github.com/carlo088/first-mythos-cup> — live on `main`.
-- Vercel: live at <https://first-mythos-cup.vercel.app>. It hosts the dashboard, vessel API, Hermes, and Telegram webhook.
+- Vercel: live at <https://first-mythos-cup.vercel.app>. It hosts the dashboard and vessel API only.
 - Local application: <http://localhost:3000> while the development server is running.
-- Fly.io: not used for the webhook architecture. Reserve it for a future continuously running ingestion worker if necessary.
+- Fly.io: live at <https://fly.io/apps/first-mythos-cup-hermes>. `fly.toml` builds `hermes/Dockerfile`, runs one 1 GB machine in Frankfurt, and mounts an encrypted 2 GB `hermes_data` volume at `/opt/data`.
 
 ## Supabase
 
@@ -23,10 +23,12 @@ This file contains identifiers and status only. Secret values live exclusively i
 - Saved snapshot: active; zero vendor calls.
 - MyShipTracking: integration retained but disabled unless `VESSEL_DATA_MODE=live` is explicitly set.
 - AISstream: credentials retained in `.env.local`, service currently considered down.
+- Global Fishing Watch: identity/registry fallback only; token is not yet configured.
 
 ## Agent runtime
 
-- Hermes runtime: `src/lib/hermes.ts`, exposed through `GET/POST /api/hermes`.
-- Hermes model identifier is configured with `HERMES_MODEL` in `.env.local`.
-- Hermes API access is configured with `OPENAI_API_KEY` in `.env.local`.
-- Telegram adapter: `src/lib/telegram.ts`, exposed through `GET/POST /api/telegram/webhook`.
+- Hermes runtime: official `nousresearch/hermes-agent:latest` image on Fly, customized under `hermes/`.
+- Persistent state: Fly volume `/opt/data`; credentials are protected in `/opt/data/.env` and mirrored from Fly secrets without logging values.
+- Fly uses least privilege: install only OpenAI, Telegram, and GFW credentials. MyShipTracking, AISstream, and the Supabase database password remain out of the agent runtime until a feature explicitly requires them.
+- Telegram adapter: Hermes' native gateway with persistent pairing authorization.
+- Gateway status: running and verified with a direct model response. Telegram remains disabled until `TELEGRAM_BOT_TOKEN` and the owner's numeric `TELEGRAM_ALLOWED_USERS` value are supplied.

@@ -17,6 +17,7 @@ This repository is shared by Codex and the Hermes agent. Read this file, `.agent
 - Each MyShipTracking simple request costs **1 credit**. Monitor credit use, retain server caching, avoid accidental polling, and report any change that can materially increase calls before shipping it.
 - A replacement MyShipTracking API key requires a new account at <https://www.myshiptracking.com/user/account/api>. Once the user provides the key, replace `MYSHIPTRACKING_API_KEY` in `.env.local` and in the hosting provider's server-side environment; never commit it.
 - `aistream.io` is currently down. Keep `AISTREAM_API_KEY` configured and preserve a provider abstraction so it can be enabled later, but do not use it as the active provider until its availability has been verified.
+- Global Fishing Watch Vessels API v3 is the fallback for vessel **identity and registry metadata only**, documented in `docs/GLOBAL_FISHING_WATCH.md`. It is not a live-position endpoint and must not replace the saved coordinates or a live AIS position provider.
 
 ## Known vessels
 
@@ -37,6 +38,8 @@ This repository is shared by Codex and the Hermes agent. Read this file, `.agent
 - The non-secret service inventory and current deployment status are in `docs/INFRASTRUCTURE.md`.
 - GitHub is the source repository. Vercel is the intended web host once the repository is linked.
 - Supabase is reserved for persisted position history. Do not expose its database password or database connection string to browser code.
+- The official Nous Research Hermes Agent runs as a persistent gateway on Fly.io with `/opt/data` on a volume. Vercel must not host the Hermes daemon or Telegram gateway.
+- Telegram access uses Hermes' persistent pairing store. Require the owner to confirm the exact pending username and numeric ID before approval; never use wildcard access.
 
 
 <!-- BEGIN:nextjs-agent-rules -->

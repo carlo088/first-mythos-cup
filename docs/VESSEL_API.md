@@ -61,3 +61,7 @@ Important fields:
 Only known fleet MMSIs are accepted. The response is normalized for the UI, includes `course: null` when the upstream reports `511`, and includes `stale` and `ageSeconds` fields.
 
 The application currently runs with `VESSEL_DATA_MODE=mock` and serves `data/vessel-snapshot.json`, making zero MyShipTracking calls. Live calls require an explicit `VESSEL_DATA_MODE=live` configuration; the provider API key always stays on the server.
+
+## Identity fallback
+
+Global Fishing Watch Vessels API v3 is documented in `docs/GLOBAL_FISHING_WATCH.md`. It may enrich identity and registry details but does not replace this endpoint's last-known coordinates.

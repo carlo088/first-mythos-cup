@@ -1,35 +1,49 @@
-# Hermes Telegram deployment
+# Hermes native Telegram gateway
 
 ## Architecture
 
-Hermes runs inside the Vercel Next.js application. Telegram sends HTTPS webhook updates to:
+Telegram connects directly to the official, always-on Hermes Agent gateway on
+Fly.io. No Vercel webhook is involved. Sessions, memories, skills, and pairing
+records persist on the Fly volume mounted at `/opt/data`.
 
-`POST https://first-mythos-cup.vercel.app/api/telegram/webhook`
-
-The webhook validates Telegram's secret header and the chat allowlist, invokes Hermes through `src/lib/hermes.ts`, then replies with Telegram's `sendMessage` method. Fly is not part of this webhook architecture.
-
-## Required server variables
+## Required secrets
 
 - `OPENAI_API_KEY`
-- `HERMES_MODEL=gpt-5.6-luna`
-- `VESSEL_DATA_MODE=mock`
-- `APP_URL=https://first-mythos-cup.vercel.app`
 - `TELEGRAM_BOT_TOKEN`
-- `TELEGRAM_ALLOWED_CHAT_IDS` — comma-separated numeric chat IDs
-- `TELEGRAM_WEBHOOK_SECRET` — optional; a safe value is derived from the bot token when omitted
+- `TELEGRAM_ALLOWED_USERS` — initially the owner's numeric Telegram user ID
 
-Put values in `.env.local` and in Vercel Production. Never commit them.
+`HERMES_MODEL=gpt-5.6-luna` is non-secret configuration. Local values live in
+the ignored `.env.local`; production values live in Fly secrets. The Hermes
+bootstrap copies required secrets into protected `/opt/data/.env` without
+printing them.
 
-## Registration
+## First connection
 
-1. Create the bot with Telegram's `@BotFather` and put its token in `.env.local`.
-2. Send the new bot a message from the permitted Telegram account.
-3. Run `npm run telegram:discover` and copy the returned numeric chat ID into `TELEGRAM_ALLOWED_CHAT_IDS` locally and in Vercel Production.
-4. Redeploy Vercel after changing variables.
-5. Run `npm run telegram:register`.
-6. Run `npm run telegram:status` and confirm the URL and zero pending errors.
+1. Create the bot with Telegram's `@BotFather` and add its token to
+   `TELEGRAM_BOT_TOKEN` in `.env.local`.
+2. Obtain the owner's numeric Telegram user ID and add it to
+   `TELEGRAM_ALLOWED_USERS`.
+3. Deploy `fly.toml`. Hermes starts `gateway run` and connects using long
+   polling; no public Fly port or Telegram webhook registration is required.
+4. Message the bot from the owner account and verify a reply in Fly logs.
 
-## HTTP health
+## Adding users safely
 
-`GET /api/telegram/webhook` reports whether Telegram is configured without exposing secrets.
+An unknown user messages the bot and receives a pairing code. The owner can ask
+Hermes to add that user. Hermes must run `hermes pairing list`, show the exact
+pending Telegram username and numeric ID, and receive explicit owner
+confirmation before running:
 
+```bash
+hermes pairing approve telegram REQUEST_ID
+```
+
+Revocation also requires explicit owner confirmation:
+
+```bash
+hermes pairing revoke telegram USER_ID
+```
+
+Never allow `*`, never approve an unmatched request, and never reveal the bot
+token. Pairing approvals are stored on the persistent volume and do not require
+a gateway restart.

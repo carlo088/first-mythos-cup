@@ -14,6 +14,7 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 6. Normalize course `511` to `null`, retain speed in knots, and calculate whether the report is stale.
 7. Return a useful upstream error without leaking credentials.
 8. Keep the provider boundary replaceable. AISstream is configured but inactive while the service is down; verify health before future activation.
+9. Use Global Fishing Watch Vessels API v3 only as an on-demand identity and registry fallback. It does not supply live positions.
 
 ## Delivery phases
 
@@ -21,14 +22,15 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 - [x] Cost-aware server endpoint and normalized vessel response.
 - [x] Initial public dashboard with manual refresh and data-age indicators.
 - [x] Persist the saved snapshot in Supabase with an idempotent migration and public-read RLS.
-- [x] Add the authenticated Hermes service at `GET/POST /api/hermes` using `gpt-5.6-luna`.
-- [x] Add a secret-validated, chat-allowlisted Telegram webhook and registration tooling.
+- [x] Prepare the official persistent Hermes Agent image, Fly configuration, protected secret bootstrap, and project skill.
+- [x] Add native Telegram gateway instructions and guarded persistent pairing management.
 - [ ] Add a nautical map and course/race geometry.
 - [ ] Add a scheduled ingestion worker only after a call-budget calculation is approved.
 - [x] Connect GitHub to Vercel and deploy the dashboard/API at `first-mythos-cup.vercel.app`.
-- [ ] Add Telegram production variables, register the webhook, and verify an end-to-end Telegram reply.
+- [x] Deploy the official Hermes gateway to Fly with an encrypted persistent volume and verify a direct model response.
+- [ ] Add the Telegram bot token and owner's numeric ID, then verify an end-to-end native Telegram reply.
 - [ ] Add observability for upstream calls, failures, cache effectiveness, and estimated credits.
-- [ ] Evaluate Fly.io only if a continuously running ingestion worker is needed.
+- [x] Remove the legacy stateless Vercel Hermes and Telegram routes after the Fly gateway is verified.
 
 ## Cost guardrail
 

@@ -1,0 +1,21 @@
+_config_version: 12
+
+model:
+  provider: "openai-api"
+  default: "${HERMES_MODEL}"
+
+terminal:
+  backend: "local"
+  cwd: "/opt/data/workspace"
+
+agent:
+  max_turns: 250
+
+gateway:
+  busy_input_mode: "queue"
+
+display:
+  tool_progress: "all"
+
+security:
+  redact_secrets: true
