@@ -24,7 +24,7 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 - [x] Add the authenticated Hermes service at `GET/POST /api/hermes` using `gpt-5.6-luna`.
 - [ ] Add a nautical map and course/race geometry.
 - [ ] Add a scheduled ingestion worker only after a call-budget calculation is approved.
-- [ ] Connect GitHub to Vercel and add server-side environment variables.
+- [ ] Reactivate Vercel team billing, then connect GitHub and add only the required server-side environment variables. Current CLI deployment is blocked with HTTP 402.
 - [ ] Add observability for upstream calls, failures, cache effectiveness, and estimated credits.
 - [ ] Evaluate Fly.io only if a continuously running ingestion worker is needed.
 
