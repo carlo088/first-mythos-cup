@@ -1,11 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Montserrat:wght@500;600;700;800&family=Playfair+Display:ital,wght@1,500&display=swap');
 
 :root {
-  --ink: #102b30;
-  --deep: #123c42;
-  --paper: #f2f0e8;
-  --line: rgba(16, 43, 48, .19);
-  --coral: #ff7048;
+  --ink: #071a2b;
+  --deep: #071a2b;
+  --paper: #f7f7f4;
+  --line: rgba(7, 26, 43, .18);
+  --blue: #009bc4;
+  --mist: #dce5e8;
 }
 
 * { box-sizing: border-box; }
@@ -14,10 +15,10 @@ html { background: var(--paper); color: var(--ink); }
 
 body {
   margin: 0;
-  font-family: Manrope, sans-serif;
+  font-family: Montserrat, sans-serif;
   background:
-    linear-gradient(rgba(16,43,48,.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16,43,48,.035) 1px, transparent 1px),
+    linear-gradient(rgba(7,26,43,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(7,26,43,.025) 1px, transparent 1px),
     var(--paper);
   background-size: 48px 48px;
 }
@@ -26,8 +27,8 @@ main { min-height: 100vh; overflow: hidden; }
 
 .hero {
   position: relative;
-  padding: 70px max(6vw, 28px) 120px;
-  min-height: 600px;
+  padding: 24px max(6vw, 28px) 0;
+  min-height: 650px;
   background: var(--deep);
   color: var(--paper);
   isolation: isolate;
@@ -42,8 +43,10 @@ main { min-height: 100vh; overflow: hidden; }
   z-index: -1;
 }
 
-.hero::before { width: 600px; height: 600px; right: -150px; top: -250px; }
-.hero::after { width: 360px; height: 360px; right: 60px; top: -120px; }
+.hero::before { width: 730px; height: 730px; right: -265px; top: -465px; }
+.hero::after { width: 500px; height: 500px; right: 4vw; top: -255px; }
+
+.hero-content { display: flex; align-items: flex-start; padding: 66px 0 0; }
 
 .eyebrow, .section-number {
   font: 500 11px/1.4 "DM Mono", monospace;
@@ -51,27 +54,24 @@ main { min-height: 100vh; overflow: hidden; }
   text-transform: uppercase;
 }
 
-.eyebrow { display: flex; align-items: center; gap: 12px; color: #a9c5c4; }
-.eyebrow span { width: 34px; height: 1px; background: var(--coral); }
+.eyebrow { display: flex; align-items: center; gap: 12px; color: #aabac5; }
+.eyebrow span { width: 34px; height: 1px; background: var(--blue); }
 
 h1 {
-  max-width: 850px;
-  margin: 56px 0 30px;
-  font-size: clamp(70px, 11vw, 154px);
+  margin: 0;
+  font-size: clamp(68px, 10vw, 150px);
   line-height: .76;
-  letter-spacing: -.07em;
+  letter-spacing: -.075em;
   text-transform: uppercase;
 }
 
-h1 em { color: var(--coral); font-family: "Playfair Display", serif; font-weight: 500; text-transform: none; }
-
-.lede {
-  max-width: 440px;
-  margin: 55px 0 0 auto;
-  color: #bad0ce;
-  font-size: 16px;
-  line-height: 1.75;
-}
+h1 em { color: var(--blue); font-family: "Playfair Display", serif; font-weight: 500; text-transform: none; }
+.boat-line { height: 372px; margin: -66px -1.5vw 0 12vw; overflow: hidden; opacity: .9; }
+.boat-line svg { width: 100%; height: 100%; fill: none; stroke: #d9e5e8; stroke-width: 1.1; }
+.boat-line .waterline { opacity: .34; stroke-dasharray: 3 8; }
+.boat-line .hull { fill: rgba(217,229,232,.10); }
+.boat-line .mainsail, .boat-line .jib { fill: rgba(217,229,232,.035); }
+.boat-line .windows { stroke-width: 3; }
 
 .fleet-section { padding: 92px max(6vw, 28px) 100px; }
 
@@ -84,7 +84,7 @@ h1 em { color: var(--coral); font-family: "Playfair Display", serif; font-weight
   gap: 24px;
 }
 
-.section-number { color: #678083; }
+.section-number { color: #617685; }
 
 .section-heading h3 {
   margin: 8px 0 0;
@@ -98,20 +98,20 @@ button {
   background: transparent;
   color: var(--ink);
   padding: 13px 17px;
-  font: 600 12px Manrope, sans-serif;
+  font: 700 11px Montserrat, sans-serif;
   text-transform: uppercase;
   letter-spacing: .08em;
   cursor: pointer;
 }
 
-button:hover:not(:disabled) { color: var(--paper); background: var(--ink); }
+button:hover:not(:disabled) { color: var(--paper); background: var(--blue); border-color: var(--blue); }
 button:disabled { opacity: .55; cursor: wait; }
 .spin { display: inline-block; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .cost-note {
   margin: 18px 0 34px;
-  color: #6d7f80;
+  color: #617685;
   font: 400 11px "DM Mono", monospace;
 }
 
@@ -127,8 +127,11 @@ button:disabled { opacity: .55; cursor: wait; }
   padding: 30px;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  background: rgba(242, 240, 232, .75);
+  background: rgba(255, 255, 255, .62);
+  position: relative;
+  overflow: hidden;
 }
+.vessel-card::after { content: "36"; position: absolute; right: -8px; bottom: -41px; color: rgba(7,26,43,.035); font-size: 190px; font-weight: 800; letter-spacing: -.12em; pointer-events: none; }
 
 .card-top { display: flex; align-items: center; justify-content: space-between; }
 .card-index { font: 500 13px "DM Mono", monospace; }
@@ -144,10 +147,11 @@ button:disabled { opacity: .55; cursor: wait; }
 }
 .signal i { width: 6px; height: 6px; border-radius: 50%; background: #31a683; box-shadow: 0 0 0 4px rgba(49,166,131,.1); }
 .signal.stale { color: #a35c48; }
-.signal.stale i { background: var(--coral); box-shadow: 0 0 0 4px rgba(255,112,72,.1); }
+.signal.stale i { background: var(--blue); box-shadow: 0 0 0 4px rgba(0,155,196,.12); }
+.model-label { margin: 36px 0 0; color: #718392; font: 400 9px "DM Mono", monospace; letter-spacing: .11em; text-transform: uppercase; }
 
 .vessel-card h2 {
-  margin: 52px 0 12px;
+  margin: 8px 0 12px;
   font-size: clamp(34px, 4vw, 52px);
   line-height: 1;
   letter-spacing: -.055em;
@@ -179,8 +183,8 @@ footer {
   align-items: center;
   gap: 20px;
   padding: 38px max(6vw, 28px);
-  background: #0d2e33;
-  color: #aac1c0;
+  background: var(--deep);
+  color: #aabac5;
   font: 400 10px "DM Mono", monospace;
 }
 footer span { color: var(--paper); letter-spacing: .14em; }
@@ -188,18 +192,19 @@ footer p { margin: 0; }
 
 @media (max-width: 850px) {
   .hero { min-height: 540px; }
-  .lede { margin-left: 0; }
+  .hero-content { padding-top: 55px; }
+  .boat-line { height: 275px; margin: -35px -3vw 0 2vw; }
   .fleet-grid { grid-template-columns: 1fr; }
   .vessel-card { min-height: 390px; }
 }
 
 @media (max-width: 560px) {
-  .hero { min-height: 500px; padding-top: 42px; padding-bottom: 72px; }
-  h1 { margin-top: 70px; }
+  .hero { min-height: 610px; padding-top: 20px; }
+  h1 { font-size: clamp(62px, 19vw, 88px); }
+  .boat-line { height: 225px; margin: -8px -23vw 0 -27vw; }
   .section-heading { align-items: start; flex-direction: column; }
   .section-heading button { width: 100%; }
   .fleet-section { padding-top: 64px; }
   dl { margin-top: 48px; }
   footer { align-items: start; flex-direction: column; }
 }
-

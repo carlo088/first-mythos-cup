@@ -51,6 +51,7 @@ function VesselCard({ vessel, state }: { vessel: FleetVessel; state: VesselState
           <i /> {position.provider === "mock" ? "Saved snapshot" : position.stale ? "Stale report" : "AIS received"}
         </span>
       </div>
+      <p className="model-label">Beneteau First 36</p>
       <h2>{vessel.name}</h2>
       <div className="position">
         <span>{position.lat.toFixed(5)}° N</span>
@@ -101,14 +102,14 @@ export function FleetDashboard() {
     <section className="fleet-section" aria-labelledby="fleet-title">
       <div className="section-heading">
         <div>
-          <span className="section-number">01 / LIVE FLEET</span>
-          <h3 id="fleet-title">Last known positions</h3>
+          <span className="section-number">01 / FIRST 36 FLEET</span>
+          <h3 id="fleet-title">Race position</h3>
         </div>
         <button type="button" onClick={() => void loadFleet()} disabled={refreshing}>
           <span className={refreshing ? "spin" : ""}>↻</span> {refreshing ? "Loading…" : "Reload snapshot"}
         </button>
       </div>
-      <div className="cost-note">Saved AIS snapshot mode · zero provider calls · no background polling.</div>
+      <div className="cost-note">SAVED AIS SNAPSHOT · ZERO PROVIDER CALLS · NO BACKGROUND POLLING</div>
       <div className="fleet-grid">
         {FLEET.map((vessel) => <VesselCard key={vessel.mmsi} vessel={vessel} state={states[vessel.mmsi]} />)}
       </div>
