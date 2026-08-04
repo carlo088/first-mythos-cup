@@ -15,6 +15,8 @@ RUN apt-get update \
       | tar -xz -C /usr/local/bin supabase \
     && npm install --global "vercel@${VERCEL_CLI_VERSION}" \
     && git config --system --add safe.directory /opt/data/workspace/first-mythos-cup \
+    && git config --system user.name "Eolo Hermes" \
+    && git config --system user.email "eolo-hermes@users.noreply.github.com" \
     && rm -rf /var/lib/apt/lists/*
 
 # First-boot seeds. Runtime state lives on the Fly volume at /opt/data.

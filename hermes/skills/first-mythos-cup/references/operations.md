@@ -19,6 +19,8 @@ filesystem outside `/opt/data` is replaceable.
 2. Run `git status --short` and preserve unrelated or unfinished work.
 3. Authenticate GitHub with the environment-provided token and run
    `gh auth setup-git`; never place a token in a remote URL.
+   The container supplies the non-secret commit identity `Eolo Hermes`; do not
+   replace it with the owner's personal email or put credentials in Git config.
 4. Run `git fetch origin` and compare the current branch with `origin/main`.
 5. If the tree is clean, fast-forward with `git pull --ff-only origin main`.
    If it is dirty or has diverged, stop and report the exact state instead of
