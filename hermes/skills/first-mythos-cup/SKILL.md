@@ -5,7 +5,7 @@ version: 1.0.0
 author: First Mythos Cup
 platforms: [linux]
 prerequisites:
-  commands: [node, npm, git, gh, vercel, flyctl, hermes]
+  commands: [node, npm, git, gh, vercel, flyctl, supabase, hermes]
 ---
 
 # First Mythos Cup operations
