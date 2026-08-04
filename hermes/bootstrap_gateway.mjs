@@ -77,11 +77,34 @@ export function renderConfiguredModel(config, model) {
   return `model:\n  default: ${model}\n${config}`;
 }
 
+export function renderRuntimeDefaults(config) {
+  let updated = config;
+
+  if (!/^session_reset:\s*(?:#.*)?$/m.test(updated)) {
+    updated = `${updated.trimEnd()}\n\nsession_reset:\n  mode: idle\n  idle_minutes: 360\n`;
+  }
+
+  const quickCommandsMatch = updated.match(/^quick_commands:\s*(?:#.*)?$/m);
+  if (!quickCommandsMatch) {
+    return `${updated.trimEnd()}\n\nquick_commands:\n  fresh:\n    type: alias\n    target: /new\n`;
+  }
+
+  const sectionStart = (quickCommandsMatch.index ?? 0) + quickCommandsMatch[0].length;
+  const remainder = updated.slice(sectionStart);
+  const nextSection = remainder.search(/^\S/m);
+  const sectionEnd = nextSection === -1 ? updated.length : sectionStart + nextSection;
+  const section = updated.slice(sectionStart, sectionEnd);
+  if (/^\s+fresh:\s*(?:#.*)?$/m.test(section)) return updated;
+
+  return `${updated.slice(0, sectionEnd).trimEnd()}\n  fresh:\n    type: alias\n    target: /new\n${updated.slice(sectionEnd)}`;
+}
+
 export function persistConfiguredModel(environment = process.env) {
   const model = environment.HERMES_MODEL;
-  if (!model || !existsSync(configPath)) return;
+  if (!existsSync(configPath)) return;
   const existing = readFileSync(configPath, "utf8");
-  const updated = renderConfiguredModel(existing, model);
+  const withDefaults = renderRuntimeDefaults(existing);
+  const updated = model ? renderConfiguredModel(withDefaults, model) : withDefaults;
   if (updated !== existing) writeFileSync(configPath, updated, { encoding: "utf8", mode: 0o600 });
 }
 

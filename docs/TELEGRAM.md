@@ -47,3 +47,9 @@ hermes pairing revoke telegram USER_ID
 Never allow `*`, never approve an unmatched request, and never reveal the bot
 token. Pairing approvals are stored on the persistent volume and do not require
 a gateway restart.
+
+## Sessions
+
+Telegram conversations start a fresh session after six hours of inactivity.
+Active work is not interrupted by that idle policy. Use `/fresh` to start a new
+session immediately; it is an alias for Hermes' built-in `/new` command.

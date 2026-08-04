@@ -30,19 +30,27 @@ filesystem outside `/opt/data` is replaceable.
 For application or agent changes, run:
 
 ```bash
-npm install
+npm ci
 npm test
 npm run typecheck
-npm run build
 git diff --check
 ```
+
+The persistent Fly machine has 1 GB of memory and runs the Hermes gateway at
+the same time. Do **not** run `npm run build`, `next build`, or `vercel build`
+locally on Fly: Next.js production compilation can exhaust the VM and interrupt
+the active agent. The canonical production build runs remotely on Vercel after
+the commit is pushed. Treat a successful Vercel production deployment as the
+build gate, inspect its logs, and report any failure instead of retrying a local
+build with different memory flags.
 
 Review `git diff` before committing. Do not commit `.env*`, tokens, generated
 build output, logs, or provider payloads. Push focused commits to `main` only
 after the owner explicitly requests publication or deployment. GitHub pushes
 trigger the Vercel production build.
 
-After a push, use Vercel CLI with the protected token to inspect the latest
+After a push, use Vercel CLI with the protected token and the configured
+`VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` to inspect the remotely built production
 deployment and its logs. Confirm both the dashboard and the saved-snapshot API.
 Never enable paid AIS calls merely to validate a deployment.
 
