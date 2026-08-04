@@ -11,6 +11,7 @@ RUN apt-get update \
     && curl -fsSL "https://github.com/superfly/flyctl/releases/download/v${FLYCTL_VERSION}/flyctl_${FLYCTL_VERSION}_Linux_x86_64.tar.gz" \
       | tar -xz -C /usr/local/bin flyctl \
     && npm install --global "vercel@${VERCEL_CLI_VERSION}" \
+    && git config --system --add safe.directory /opt/data/workspace/first-mythos-cup \
     && rm -rf /var/lib/apt/lists/*
 
 # First-boot seeds. Runtime state lives on the Fly volume at /opt/data.
