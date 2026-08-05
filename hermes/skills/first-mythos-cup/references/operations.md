@@ -38,7 +38,7 @@ npm run typecheck
 git diff --check
 ```
 
-The persistent Fly machine has 1 GB of memory and runs the Hermes gateway at
+The persistent Fly machine has 2 GB of memory and runs the Hermes gateway at
 the same time. Do **not** run `npm run build`, `next build`, or `vercel build`
 locally on Fly: Next.js production compilation can exhaust the VM and interrupt
 the active agent. The canonical production build runs remotely on Vercel after

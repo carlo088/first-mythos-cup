@@ -7,7 +7,7 @@ This file contains identifiers and status only. Secret values live exclusively i
 - GitHub: <https://github.com/carlo088/first-mythos-cup> — live on `main`.
 - Vercel: live at <https://first-mythos-cup.vercel.app>. It hosts the dashboard and vessel API only.
 - Local application: <http://localhost:3000> while the development server is running.
-- Fly.io: live at <https://fly.io/apps/first-mythos-cup-hermes>. `fly.toml` builds `hermes/Dockerfile`, runs one 1 GB machine in Frankfurt, and mounts an encrypted 2 GB `hermes_data` volume at `/opt/data`.
+- Fly.io: live at <https://fly.io/apps/first-mythos-cup-hermes>. `fly.toml` builds `hermes/Dockerfile`, runs one 2 GB machine in Frankfurt, and mounts an encrypted 2 GB `hermes_data` volume at `/opt/data`.
 
 ## Supabase
 
