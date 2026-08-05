@@ -37,3 +37,9 @@ display:
 
 security:
   redact_secrets: true
+
+hooks_auto_accept: true
+hooks:
+  pre_api_request:
+    - command: "/opt/hermes/bin/first-mythos-cup-api-pacer"
+      timeout: 180

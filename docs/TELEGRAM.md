@@ -62,6 +62,12 @@ than Luna's full context window. It makes at most two provider attempts per turn
 These safeguards keep tool-heavy sessions from repeatedly resending a large
 prompt into the same rolling rate-limit window.
 
+A synchronous pre-request hook also reserves approximate input tokens in a
+rolling 60-second window. Hermes main-agent calls are capped at 120,000 TPM,
+leaving headroom inside the provider's 200,000 TPM limit for compression,
+titles, retries, and other project traffic. The pacer waits before sending; it
+does not burn requests probing a limit that is already known.
+
 On gateway startup, Git is configured to use GitHub CLI's credential helper.
 The helper reads `GITHUB_TOKEN` from the environment at request time; the token
 is not embedded in the repository remote URL or committed configuration.

@@ -39,6 +39,8 @@ test("adds the six-hour idle reset and fresh command without replacing persisten
   assert.match(updated, /session_reset:\n  mode: idle\n  idle_minutes: 360/);
   assert.match(updated, /agent:\n  api_max_retries: 2/);
   assert.match(updated, /compression:\n  enabled: true\n  threshold: 0\.05/);
+  assert.match(updated, /hooks_auto_accept: true/);
+  assert.match(updated, /hooks:\n  pre_api_request:\n    - command: \/opt\/hermes\/bin\/first-mythos-cup-api-pacer/);
   assert.match(updated, /quick_commands:\n  fresh:\n    type: alias\n    target: \/new --yes/);
   assert.match(updated, /platforms:\n  telegram:\n    enabled: true/);
 });

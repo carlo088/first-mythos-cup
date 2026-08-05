@@ -29,12 +29,14 @@ filesystem outside `/opt/data` is replaceable.
 
 ## Verification and publishing
 
-For application or agent changes, run:
+Keep provider round-trips low: combine related read-only inspections, do not
+repeat `git status` between unchanged steps, and prefer one verification command
+over separate test/typecheck turns. Run `npm ci` only when `package.json` or the
+lockfile changed, dependencies are missing, or a clean install is specifically
+needed. For application or agent changes, run:
 
 ```bash
-npm ci
-npm test
-npm run typecheck
+npm run verify
 git diff --check
 ```
 

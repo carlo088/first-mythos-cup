@@ -102,6 +102,14 @@ export function renderRuntimeDefaults(config) {
     updated = `${updated.trimEnd()}\n\ncompression:\n  enabled: true\n  threshold: 0.05\n  target_ratio: 0.20\n  protect_last_n: 20\n  protect_first_n: 0\n  hygiene_hard_message_limit: 100\n`;
   }
 
+  if (!/^hooks_auto_accept:\s*/m.test(updated)) {
+    updated = `${updated.trimEnd()}\n\nhooks_auto_accept: true\n`;
+  }
+
+  if (!/^hooks:\s*(?:#.*)?$/m.test(updated)) {
+    updated = `${updated.trimEnd()}\n\nhooks:\n  pre_api_request:\n    - command: /opt/hermes/bin/first-mythos-cup-api-pacer\n      timeout: 180\n`;
+  }
+
   if (!/^session_reset:\s*(?:#.*)?$/m.test(updated)) {
     updated = `${updated.trimEnd()}\n\nsession_reset:\n  mode: idle\n  idle_minutes: 360\n`;
   }
