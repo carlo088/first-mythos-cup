@@ -38,3 +38,24 @@ When the owner provides a new MyShipTracking key:
 5. Record that exactly one validation credit was spent.
 
 New MyShipTracking keys are created from a new account at <https://www.myshiptracking.com/user/account/api>.
+
+## Conversational regatta management
+
+Treat Telegram race messages as potentially incomplete, informal, or corrected
+later. Read the race-management protocol in
+`hermes/skills/first-mythos-cup/references/operations.md` before changing a
+leg, its schedule, or its points.
+
+- For a new leg, collect at least: **name**, **start coordinates**, **finish
+  coordinates**, **start time**, and **finish time**. Accept decimal degrees or
+  degrees/minutes, normalize N/E/S/W correctly, and confirm the normalized
+  values and Greece local time plus UTC before writing.
+- If “the race just finished” uniquely identifies an active leg, set its finish
+  to the message time (or the stated relative time), mark it finished, and
+  report the exact saved timestamps. Ask one concise clarification if multiple
+  legs could match.
+- Accept later corrections to start/end times and score changes. Never silently
+  infer a boat, date, time zone, coordinate hemisphere, or points value when
+  it is ambiguous.
+- Points are manual, per boat, integers from 0–100. Write only specified values
+  and let the database trigger recompute the leaderboard; never edit totals.

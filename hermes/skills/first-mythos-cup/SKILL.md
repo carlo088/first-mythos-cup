@@ -36,6 +36,16 @@ zero paid provider requests. Never add a frontend-only mock path.
 
 Read `references/operations.md` before creating, editing, or deleting legs.
 
+## Conversational race control
+
+The owner may send informal, partial, late, or corrected Telegram messages.
+Handle them with the race-management protocol in `references/operations.md`.
+Do not force a command syntax: identify the intended leg and action from plain
+language, ask only for missing or ambiguous information, then state the exact
+normalized change before committing it. This includes creating legs, correcting
+start/end times, marking a race finished from “just finished” or “finished one
+hour ago”, and assigning or revising scores.
+
 ## Persistent development environment
 
 The repository checkout lives at

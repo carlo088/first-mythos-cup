@@ -122,6 +122,49 @@ Finished-race points live in `public.leg_scores`. Write one validated integer
 0–100 per leg/MMSI. Its trigger recalculates aggregate `public.vessel_scores`.
 Do not edit aggregate totals independently.
 
+### Conversational race-management protocol
+
+The owner can operate races in normal language over Telegram. Be helpful with
+partial messages, but do not invent operational facts. Query current legs when
+an existing race is referenced, so replies are based on the database rather
+than stale chat context.
+
+**New leg intake.** A new leg needs five fields: a unique race name, start
+latitude/longitude, finish latitude/longitude, start date/time, and finish
+date/time. Accept decimal degrees or degree/minute notation with N/E/S/W
+suffixes. Use `Europe/Athens` as the race-local time zone unless the owner says
+otherwise. A bare time without a date, an unsigned coordinate with an unclear
+hemisphere, or unclear start/finish endpoint is incomplete. Ask one compact
+question listing only missing fields; never ask again for data already given.
+
+When complete, echo name, normalized decimal coordinates, Greece-local time,
+UTC time, and the default 1,800 m corridor. Ask for confirmation before the
+write unless the owner has clearly confirmed those exact normalized values in
+the same message.
+
+**Time corrections and finish messages.** Match a named leg exactly, or use a
+single active leg only when unambiguous. “Race just finished” means set
+`ends_at` to the received-message time in Greece time and status to `finished`.
+“It finished one hour ago” means that message time minus one hour. Convert the
+resolved instant to UTC before writing, retain the start time, and report saved
+local plus UTC end times. If two legs could match, ask which one; never finish
+multiple legs. Confirm old → new values before writing when the race or date is
+ambiguous.
+
+**Manual scoring.** Recognize “Prima Regatina: Isera 10, Fizzy 7, Tiamat 4”,
+“give Fizzy 8 instead”, or “scores are 10/7/4”. Resolve names only against
+Isera, Fizzy, and Tiamat. For an ordered shorthand such as `10/7/4`, ask for
+the boat order unless it was explicitly established immediately before. Validate
+each supplied value as an integer 0–100. Write only supplied values to
+`leg_scores`; omitted boats retain their existing score. Read back the leg's
+scores and refreshed leaderboard afterwards. Never write `vessel_scores`.
+
+**Safety and recovery.** All writes use protected Supabase credentials and are
+followed by a narrow read-back of affected rows. Do not delete a leg, position
+history, or scores from a conversational request without an explicit target and
+confirmation. If a request is ambiguous, ask a single focused question rather
+than guessing. If a write fails, say it did not take effect.
+
 ### Vessel ingestion scheduler
 
 `/opt/hermes/bin/first-mythos-cup-vessel-worker` runs as a separate Node child
