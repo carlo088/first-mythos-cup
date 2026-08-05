@@ -4,11 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { FleetMap, type MappedVessel } from "@/components/fleet-map";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import { FLEET, type FleetVessel } from "@/lib/vessels";
+import { sortLeaderboard, type LeaderboardEntry } from "@/lib/leaderboard";
 
 type VesselState =
   | { status: "loading" }
   | { status: "error"; message: string }
   | { status: "ready"; position: VesselPosition };
+
+type LeaderboardState =
+  | { status: "loading" }
+  | { status: "error" }
+  | { status: "ready"; entries: LeaderboardEntry[] };
 
 const NAV_STATUS: Record<number, string> = {
   0: "Under way",
@@ -77,6 +83,7 @@ export function FleetDashboard() {
   );
   const [refreshing, setRefreshing] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardState>({ status: "loading" });
 
   const loadFleet = useCallback(async () => {
     setRefreshing(true);
@@ -93,6 +100,14 @@ export function FleetDashboard() {
       }),
     );
     setStates(Object.fromEntries(results));
+    try {
+      const response = await fetch("/api/leaderboard", { cache: "no-store" });
+      const body = (await response.json()) as { data?: LeaderboardEntry[] };
+      if (!response.ok || !body.data) throw new Error("Leaderboard unavailable");
+      setLeaderboard({ status: "ready", entries: sortLeaderboard(body.data) });
+    } catch {
+      setLeaderboard({ status: "error" });
+    }
     setUpdatedAt(new Date());
     setRefreshing(false);
   }, []);
@@ -119,8 +134,31 @@ export function FleetDashboard() {
       <FleetMap vessels={mappedVessels} />
       <div className="detail-heading">
         <span className="section-number">02 / FIRST 36 FLEET</span>
-        <h3>Vessel reports</h3>
+        <h3>Leaderboard</h3>
       </div>
+      {leaderboard.status === "loading" && <div className="leaderboard-message">Loading points…</div>}
+      {leaderboard.status === "error" && <div className="leaderboard-message error-card">Points unavailable right now.</div>}
+      {leaderboard.status === "ready" && (
+        <div className="leaderboard" role="table" aria-label="First 36 vessel leaderboard">
+          <div className="leaderboard-row leaderboard-header" role="row">
+            <span>Rank</span><span>Vessel</span><span>Last report</span><span>Total points</span>
+          </div>
+          {leaderboard.entries.map((entry, index) => {
+            const state = states[entry.mmsi];
+            return (
+              <div className="leaderboard-row" role="row" key={entry.mmsi}>
+                <strong className="leaderboard-rank">{String(index + 1).padStart(2, "0")}</strong>
+                <span className="leaderboard-vessel"><i style={{ background: entry.color }} />{entry.name}</span>
+                <span className="leaderboard-report">
+                  {state?.status === "ready" ? (state.position.stale ? "Stale AIS" : "AIS received") : "Report unavailable"}
+                </span>
+                <strong className="leaderboard-points">{entry.totalPoints}<small> pts</small></strong>
+              </div>
+            );
+          })}
+        </div>
+      )}
+      <div className="reports-heading"><span className="section-number">03 / VESSEL REPORTS</span><h3>Last-known telemetry</h3></div>
       <div className="fleet-grid">
         {FLEET.map((vessel) => <VesselCard key={vessel.mmsi} vessel={vessel} state={states[vessel.mmsi]} />)}
       </div>

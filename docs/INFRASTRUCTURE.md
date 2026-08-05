@@ -14,8 +14,8 @@ This file contains identifiers and status only. Secret values live exclusively i
 - Project URL: <https://jnqccspdghuyqxpftihk.supabase.co>
 - Project reference: `jnqccspdghuyqxpftihk`
 - Project/database label: `first-mythos-cup`
-- Status: live with fleet tables, public-read RLS, and three mock position rows.
-- Intended use: vessel position history and later race data.
+- Status: live with fleet tables, public-read RLS, three mock position rows, and three zero-point leaderboard rows.
+- Intended use: vessel position history and race scoring.
 - Publishable key, database URL, and password: `.env.local` only.
 
 ## Vessel APIs

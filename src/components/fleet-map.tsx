@@ -55,10 +55,8 @@ export function FleetMap({ vessels }: { vessels: MappedVessel[] }) {
           className: "fleet-marker-wrap",
           html: `<span class="fleet-marker" style="--marker-color:${vessel.color}; --marker-course:${course}deg" aria-label="${vessel.name} vessel marker">
             <svg viewBox="0 0 40 56" role="img" aria-hidden="true" focusable="false">
-              <path class="fleet-marker-shadow" d="M20 2 35 39c-3 10-9 15-15 15S8 49 5 39L20 2Z" />
-              <path class="fleet-marker-hull" d="M20 2 34 39c-3 7-8 11-14 11S9 46 6 39L20 2Z" />
-              <path class="fleet-marker-cabin" d="m13 31 7-9 7 9-3 4h-8l-3-4Z" />
-              <path class="fleet-marker-wake" d="M11 45c3 3 5 4 9 4s6-1 9-4" />
+              <path class="fleet-marker-shadow" d="M20 2 37 51 20 43 3 51 20 2Z" />
+              <path class="fleet-marker-hull" d="M20 3 35 49 20 41 5 49 20 3Z" />
             </svg>
           </span><strong>${vessel.name}</strong>`,
           iconAnchor: [20, 28],

@@ -142,8 +142,6 @@ button:disabled { opacity: .55; cursor: wait; }
 .fleet-marker svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .fleet-marker-shadow { fill: white; stroke: var(--deep); stroke-width: 5; stroke-linejoin: round; }
 .fleet-marker-hull { fill: var(--marker-color); stroke: white; stroke-width: 1.8; stroke-linejoin: round; }
-.fleet-marker-cabin { fill: var(--deep); stroke: white; stroke-width: 1.2; stroke-linejoin: round; }
-.fleet-marker-wake { fill: none; stroke: white; stroke-width: 1.4; stroke-linecap: round; opacity: .82; }
 
 .fleet-map-legend {
   position: absolute;
@@ -165,6 +163,19 @@ button:disabled { opacity: .55; cursor: wait; }
 
 .detail-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
 .detail-heading h3 { margin: 0; font-size: clamp(26px, 3vw, 42px); letter-spacing: -.05em; }
+.leaderboard { border-top: 1px solid var(--ink); margin-bottom: 70px; }
+.leaderboard-row { display: grid; grid-template-columns: 90px 1.4fr 1fr 150px; align-items: center; gap: 20px; min-height: 76px; padding: 0 22px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.55); }
+.leaderboard-row:nth-child(odd) { background: rgba(255,255,255,.8); }
+.leaderboard-header { min-height: 38px; color: #718392; background: transparent !important; font: 400 9px "DM Mono", monospace; letter-spacing: .11em; text-transform: uppercase; }
+.leaderboard-rank { color: var(--blue); font: 500 15px "DM Mono", monospace; }
+.leaderboard-vessel { display: flex; align-items: center; gap: 11px; font-size: 24px; font-weight: 700; letter-spacing: -.04em; }
+.leaderboard-vessel i { width: 9px; height: 9px; border-radius: 50%; }
+.leaderboard-report { color: #718392; font: 400 10px "DM Mono", monospace; text-transform: uppercase; }
+.leaderboard-points { color: var(--deep); font: 500 25px "DM Mono", monospace; text-align: right; }
+.leaderboard-points small { color: #718392; font-size: 10px; text-transform: uppercase; }
+.leaderboard-message { margin-bottom: 70px; padding: 28px 22px; border: 1px solid var(--line); color: #718392; font: 400 11px "DM Mono", monospace; }
+.reports-heading { margin-bottom: 24px; }
+.reports-heading h3 { margin: 7px 0 0; font-size: clamp(26px, 3vw, 42px); letter-spacing: -.05em; }
 
 .fleet-grid {
   display: grid;
@@ -260,6 +271,10 @@ footer p { margin: 0; }
   .fleet-map-legend { left: 10px; right: 10px; bottom: 10px; min-width: 0; }
   .fleet-map-legend div { grid-template-columns: 8px 60px 1fr; }
   .detail-heading { align-items: start; flex-direction: column; }
+  .leaderboard-row { grid-template-columns: 45px 1fr 90px; gap: 10px; padding: 0 12px; }
+  .leaderboard-header span:nth-child(3), .leaderboard-row .leaderboard-report { display: none; }
+  .leaderboard-points { font-size: 18px; }
+  .leaderboard-vessel { font-size: 19px; }
   dl { margin-top: 48px; }
   footer { align-items: start; flex-direction: column; }
 }
