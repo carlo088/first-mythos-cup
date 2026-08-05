@@ -19,10 +19,15 @@ test("syncs the complete server environment into persistent Hermes state", () =>
     "SUPABASE_POOLER_HOST",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_PROJECT_REF",
-    "TELEGRAM_ALLOWED_USERS",
   ]) {
     assert.equal(SYNC_KEYS.includes(key), true, `${key} must persist on Fly`);
   }
+  assert.equal(SYNC_KEYS.includes("TELEGRAM_ALLOWED_USERS"), false);
+});
+
+test("enables native pairing for unauthorized Telegram DMs", () => {
+  const updated = renderRuntimeDefaults("platforms:\n  telegram:\n    enabled: true\n");
+  assert.match(updated, /unauthorized_dm_behavior: pair/);
 });
 
 test("resolves an environment placeholder in the model section", () => {

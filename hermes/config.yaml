@@ -47,3 +47,8 @@ hooks:
   pre_api_request:
     - command: "/opt/hermes/bin/first-mythos-cup-api-pacer"
       timeout: 180
+
+platforms:
+  telegram:
+    enabled: true
+    unauthorized_dm_behavior: pair

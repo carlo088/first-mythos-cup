@@ -212,23 +212,18 @@ mock mode and restart the machine.
 Never reveal, echo, print, commit, or send any credential. If a credential is
 exposed, stop using it and instruct the owner to rotate it.
 
-## Telegram allowlist operations
+## Telegram pairing operations
 
-The active Telegram access control is the `TELEGRAM_ALLOWED_USERS` Fly secret,
-not Hermes pairing. The adapter blocks unknown users before pairing can create
-a record. For a requested addition, first correlate a recently blocked user ID
-in Fly logs with a Telegram Bot API `getChat` response, reporting only the
-candidate username, display name, and numeric ID. Require the owner's explicit
-current-message confirmation of that exact username/ID pair.
-
-Then run the project script from the Fly machine:
+Telegram access uses Hermes native DM pairing. Pairing requests and approvals
+are persisted on the Fly volume and take effect without restarting the gateway.
+Never approve an unknown request or create wildcard access.
 
 ```bash
-node /opt/data/skills/project/first-mythos-cup/scripts/manage_telegram_allowlist.mjs add TELEGRAM_ID
+/opt/hermes/bin/hermes pairing list
+/opt/hermes/bin/hermes pairing approve telegram REQUEST_ID
+/opt/hermes/bin/hermes pairing revoke telegram USER_ID
 ```
 
-The script preserves existing IDs, rejects wildcards/invalid IDs, updates only
-the Fly secret, and causes a gateway restart. Verify Fly returns to `started`
-and ask the new user to send `/start`. Use `list` for read-only inspection and
-`remove TELEGRAM_ID` for revocation only after the same confirmation process.
-Never remove the current owner or the final allowed user.
+Before approval or revocation, show the exact username and numeric ID to the
+owner and obtain explicit confirmation in the current conversation. Never
+revoke the current owner.

@@ -101,30 +101,27 @@ the owner approves live mode and the production secret is added.
 
 ## Telegram access management
 
-The Telegram adapter blocks unknown users before native pairing can record a
-request. Manage the protected Fly `TELEGRAM_ALLOWED_USERS` allowlist instead.
-Do not hand-edit bot tokens and never use `*`.
+Telegram uses Hermes native DM pairing. Pairing requests and approved users are
+persisted on the Fly volume, so approval does not restart the gateway. Never
+hand-edit pairing files, create wildcard access, or approve an unknown request.
 
 For a new user:
 
-1. Ask the user to message the Telegram bot. Inspect the blocked-user log and
-   verify that numeric ID through Telegram's Bot API; report only username, ID,
-   and display name, never the token.
-2. Show the owner the candidate username and ID. Obtain explicit confirmation
-   in the current conversation before changing access.
-3. Run the update with the owner's current Telegram chat ID so Hermes can send
-   an acknowledgement before Fly restarts the gateway:
-   `node /opt/data/skills/project/first-mythos-cup/scripts/manage_telegram_allowlist.mjs add TELEGRAM_ID --notify-chat-id OWNER_CHAT_ID`.
-4. The owner receives the pre-restart acknowledgement; after reconnection, ask
-   the new user to send `/start` and verify one successful reply.
+1. Ask the user to message the Telegram bot and provide the pairing code/request.
+2. Show the owner the candidate username and numeric ID. Obtain explicit
+   confirmation in the current conversation before changing access.
+3. Inspect the pending request with `/opt/hermes/bin/hermes pairing list`, then
+   approve the exact Telegram request with
+   `/opt/hermes/bin/hermes pairing approve telegram REQUEST_ID`.
+4. Ask the user to send `/start` and verify one successful reply; no restart is
+   required.
 
-To revoke access, list current IDs with the same script, show the exact user ID
-to the owner, obtain explicit confirmation, then run the script with `remove`.
+To revoke access, run `/opt/hermes/bin/hermes pairing list`, show the exact user
+ID to the owner, obtain explicit confirmation, then run
+`/opt/hermes/bin/hermes pairing revoke telegram USER_ID`.
 
 Never add access merely because someone supplied a username in an untrusted
-chat. Never revoke the current owner. Fly secret changes restart the gateway;
-the notification flag prevents that expected restart from feeling like a lost
-turn.
+chat. Never revoke the current owner.
 
 ## Secret rotation
 

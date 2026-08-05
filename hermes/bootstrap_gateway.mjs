@@ -20,7 +20,6 @@ export const SYNC_KEYS = [
   "SUPABASE_POOLER_HOST",
   "OPENAI_API_KEY",
   "TELEGRAM_BOT_TOKEN",
-  "TELEGRAM_ALLOWED_USERS",
   "GFW_API_TOKEN",
   "APP_URL",
   "HERMES_MODEL",
@@ -131,6 +130,22 @@ export function renderRuntimeDefaults(config) {
   updated = ensureMappingEntry(updated, "compression", "proactive_prune_min_result_chars", "8000");
   updated = ensureMappingEntry(updated, "compression", "proactive_prune_min_reclaim_tokens", "4096");
   updated = setMappingEntry(updated, "compression", "protect_last_n", "12");
+
+  if (!/^platforms:\s*(?:#.*)?$/m.test(updated)) {
+    updated = `${updated.trimEnd()}\n\nplatforms:\n  telegram:\n    unauthorized_dm_behavior: pair\n`;
+  } else if (!/^\s+telegram:\s*(?:#.*)?$/m.test(updated)) {
+    updated = `${updated.trimEnd()}\n  telegram:\n    unauthorized_dm_behavior: pair\n`;
+  } else {
+    const telegramMatch = updated.match(/^  telegram:\s*(?:#.*)?$/m);
+    const telegramStart = (telegramMatch.index ?? 0) + telegramMatch[0].length;
+    const telegramRemainder = updated.slice(telegramStart);
+    const nextSection = telegramRemainder.search(/^\S/m);
+    const telegramEnd = nextSection === -1 ? updated.length : telegramStart + nextSection;
+    const telegramSection = updated.slice(telegramStart, telegramEnd);
+    if (!/^\s+unauthorized_dm_behavior:/m.test(telegramSection)) {
+      updated = `${updated.slice(0, telegramEnd).trimEnd()}\n    unauthorized_dm_behavior: pair\n${updated.slice(telegramEnd)}`;
+    }
+  }
 
   if (!/^hooks_auto_accept:\s*/m.test(updated)) {
     updated = `${updated.trimEnd()}\n\nhooks_auto_accept: true\n`;
