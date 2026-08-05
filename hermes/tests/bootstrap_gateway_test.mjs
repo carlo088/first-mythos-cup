@@ -19,6 +19,7 @@ test("syncs the complete server environment into persistent Hermes state", () =>
     "SUPABASE_POOLER_HOST",
     "SUPABASE_ACCESS_TOKEN",
     "SUPABASE_PROJECT_REF",
+    "TELEGRAM_ALLOWED_USERS",
   ]) {
     assert.equal(SYNC_KEYS.includes(key), true, `${key} must persist on Fly`);
   }

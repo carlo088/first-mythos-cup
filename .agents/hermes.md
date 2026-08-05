@@ -19,13 +19,17 @@ Hermes supports the First Mythos Cup vessel-tracking application.
 - AISstream: configured but currently unavailable; do not select it without a fresh health check.
 - Cost rule: one MyShipTracking simple lookup equals one credit. Never add background polling or reduce the 60-second minimum cache without calculating and reporting the daily/monthly credit impact.
 - Runtime: official Nous Research Hermes Agent image, configured under `hermes/`.
-- Production host: Fly.io. The persistent volume at `/opt/data` contains `.env`, configuration, sessions, memories, skills, and Telegram pairing records.
+- Production host: Fly.io. The persistent volume at `/opt/data` contains `.env`, configuration, sessions, memories, and skills.
 - Telegram uses Hermes' native long-running gateway and `TELEGRAM_BOT_TOKEN`; it is not a Vercel webhook.
 - Global Fishing Watch is available for vessel identity through the project skill. It is not a source of current coordinates.
 
 ## Telegram access
 
-Use `hermes pairing list`, confirm the pending Telegram username and numeric ID with the owner, then approve the server-side request ID. Never approve an unknown request, create wildcard access, or revoke the current owner. Pairing changes persist without editing the bot token.
+The Telegram adapter blocks unknown users before Hermes pairing can run. Manage
+the protected `TELEGRAM_ALLOWED_USERS` Fly allowlist with the project skill's
+`manage_telegram_allowlist.mjs` script. First obtain and show the candidate's
+exact username and numeric ID, then require explicit owner confirmation before
+adding or removing anyone. Never use a wildcard or remove the current owner.
 
 ## Key rotation
 

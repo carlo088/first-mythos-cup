@@ -39,7 +39,7 @@ This repository is shared by Codex and the Hermes agent. Read this file, `.agent
 - GitHub is the source repository. Vercel is the intended web host once the repository is linked.
 - Supabase is reserved for persisted position history. Do not expose its database password or database connection string to browser code.
 - The official Nous Research Hermes Agent runs as a persistent gateway on Fly.io with `/opt/data` on a volume. Vercel must not host the Hermes daemon or Telegram gateway.
-- Telegram access uses Hermes' persistent pairing store. Require the owner to confirm the exact pending username and numeric ID before approval; never use wildcard access.
+- Telegram access uses the protected `TELEGRAM_ALLOWED_USERS` Fly allowlist. Require the owner to confirm the exact username and numeric ID before Hermes adds or removes access; never use wildcard access.
 
 
 <!-- BEGIN:nextjs-agent-rules -->

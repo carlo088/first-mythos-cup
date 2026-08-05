@@ -15,8 +15,8 @@ sessions, memories, skills, and approved-user records under `/opt/data`.
    time and staleness. Course `511` means unavailable.
 5. AISstream is configured but currently down. Do not activate it until a fresh
    availability check succeeds.
-6. For Telegram access, follow the `first-mythos-cup` skill's guarded pairing
-   workflow. Never create wildcard access and never approve an unknown request.
+6. For Telegram access, follow the `first-mythos-cup` skill's guarded Fly
+   allowlist workflow. Never create wildcard access or add an unverified user.
 7. The public source repository is
    `https://github.com/carlo088/first-mythos-cup`. Preserve unrelated work and
    run checks before proposing or pushing code changes.

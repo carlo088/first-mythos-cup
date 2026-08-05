@@ -20,6 +20,7 @@ export const SYNC_KEYS = [
   "SUPABASE_POOLER_HOST",
   "OPENAI_API_KEY",
   "TELEGRAM_BOT_TOKEN",
+  "TELEGRAM_ALLOWED_USERS",
   "GFW_API_TOKEN",
   "APP_URL",
   "HERMES_MODEL",
@@ -33,7 +34,7 @@ export const SYNC_KEYS = [
   "SUPABASE_PROJECT_REF",
   "VESSEL_CACHE_SECONDS",
 ];
-const seedOnceKeys = ["TELEGRAM_ALLOWED_USERS"];
+const seedOnceKeys = [];
 
 export function parseEnv(text) {
   const lines = text.split(/\r?\n/);

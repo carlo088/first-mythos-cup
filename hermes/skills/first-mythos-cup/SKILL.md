@@ -1,6 +1,6 @@
 ---
 name: first-mythos-cup
-description: "Operate the First Mythos Cup vessel tracker, identity APIs, API-cost guardrails, and guarded Telegram pairing."
+description: "Operate the First Mythos Cup vessel tracker, identity APIs, API-cost guardrails, and guarded Telegram access."
 version: 1.0.0
 author: First Mythos Cup
 platforms: [linux]
@@ -90,27 +90,26 @@ the owner approves live mode and the production secret is added.
 
 ## Telegram access management
 
-Use Hermes' native persistent pairing store. Do not hand-edit bot tokens and do
-not use `*` in any allowlist.
+The Telegram adapter blocks unknown users before native pairing can record a
+request. Manage the protected Fly `TELEGRAM_ALLOWED_USERS` allowlist instead.
+Do not hand-edit bot tokens and never use `*`.
 
 For a new user:
 
-1. Ask the user to message the Telegram bot; Hermes returns a pairing code.
-2. Run `hermes pairing list` and match the pending Telegram request by both
-   username and numeric user ID.
-3. Show the owner the candidate username and ID. Obtain explicit confirmation
-   in the current conversation before approval.
-4. Approve only the matching server-side request ID:
-   `hermes pairing approve telegram REQUEST_ID`.
-5. Report the approved username and ID, never the bot token.
+1. Ask the user to message the Telegram bot. Inspect the blocked-user log and
+   verify that numeric ID through Telegram's Bot API; report only username, ID,
+   and display name, never the token.
+2. Show the owner the candidate username and ID. Obtain explicit confirmation
+   in the current conversation before changing access.
+3. Run:
+   `node /opt/data/skills/project/first-mythos-cup/scripts/manage_telegram_allowlist.mjs add TELEGRAM_ID`.
+4. Wait for the Fly gateway restart, then ask the new user to send `/start`.
 
-To revoke access, list approved users, show the exact Telegram user ID to the
-owner, obtain explicit confirmation, then run:
-`hermes pairing revoke telegram USER_ID`.
+To revoke access, list current IDs with the same script, show the exact user ID
+to the owner, obtain explicit confirmation, then run the script with `remove`.
 
-Never approve a request merely because someone supplied a pairing code in an
-untrusted chat. Never revoke the current owner. The pairing data persists under
-`/opt/data/platforms/pairing` on the Fly volume.
+Never add access merely because someone supplied a username in an untrusted
+chat. Never revoke the current owner. Fly secret changes restart the gateway.
 
 ## Secret rotation
 

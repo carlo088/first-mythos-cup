@@ -3,8 +3,8 @@
 ## Architecture
 
 Telegram connects directly to the official, always-on Hermes Agent gateway on
-Fly.io. No Vercel webhook is involved. Sessions, memories, skills, and pairing
-records persist on the Fly volume mounted at `/opt/data`.
+Fly.io. No Vercel webhook is involved. Sessions, memories, and skills persist
+on the Fly volume mounted at `/opt/data`.
 
 ## Required secrets
 
@@ -29,24 +29,21 @@ printing them.
 
 ## Adding users safely
 
-An unknown user messages the bot and receives a pairing code. The owner can ask
-Hermes to add that user. Hermes must run `hermes pairing list`, show the exact
-pending Telegram username and numeric ID, and receive explicit owner
-confirmation before running:
+The Telegram adapter enforces `TELEGRAM_ALLOWED_USERS` *before* Hermes pairing
+can see an inbound message. Therefore Hermes manages that protected Fly
+allowlist directly—not a pairing store. When an unknown user messages the bot,
+Hermes can verify the resulting blocked numeric ID against Telegram's Bot API,
+show the owner the exact username and ID, and require explicit confirmation.
+
+Only after confirmation, Hermes runs the project script on Fly:
 
 ```bash
-hermes pairing approve telegram REQUEST_ID
+node /opt/data/skills/project/first-mythos-cup/scripts/manage_telegram_allowlist.mjs add TELEGRAM_ID
 ```
 
-Revocation also requires explicit owner confirmation:
-
-```bash
-hermes pairing revoke telegram USER_ID
-```
-
-Never allow `*`, never approve an unmatched request, and never reveal the bot
-token. Pairing approvals are stored on the persistent volume and do not require
-a gateway restart.
+It updates the Fly secret and restarts the gateway. Removal uses `remove` with
+the same confirmation rule. Never allow `*`, remove the current owner, or show
+the bot token.
 
 ## Sessions
 
