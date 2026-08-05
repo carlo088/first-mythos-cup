@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import type { ImportantLeg, LegTrack } from "@/lib/important-leg";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import type { FleetVessel } from "@/lib/vessels";
+import type { Language } from "@/components/fleet-dashboard";
 import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
 
 export type MappedVessel = { vessel: FleetVessel; position: VesselPosition };
@@ -15,10 +16,10 @@ function receivedLabel(receivedAt: string) {
   }).format(new Date(receivedAt));
 }
 
-function markerHtml(name: string, color: string, course: number | null, replay = false) {
+function markerHtml(name: string, color: string, course: number | null, replay = false, language: Language = "en") {
   return `<span class="fleet-marker" style="--marker-color:${color}; --marker-course:${course ?? 0}deg" aria-label="${name} vessel marker">
     <svg viewBox="0 0 40 56" role="img" aria-hidden="true"><path class="fleet-marker-shadow" d="M20 2 36 50 20 42 4 50 20 2Z"/><path class="fleet-marker-hull" d="M20 4 33 46 20 39 7 46 20 4Z"/></svg>
-  </span><strong>${name}${replay ? " · REPLAY" : ""}</strong>`;
+  </span><strong>${name}${replay ? ` · ${language === "it" ? "RIPRODUZIONE" : "REPLAY"}` : ""}</strong>`;
 }
 
 export function FleetMap({
@@ -27,12 +28,14 @@ export function FleetMap({
   tracks = [],
   pinnedLegId,
   replayAt,
+  language,
 }: {
   vessels: MappedVessel[];
   legs?: ImportantLeg[];
   tracks?: LegTrack[];
   pinnedLegId?: string | null;
   replayAt?: string;
+  language: Language;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -57,8 +60,8 @@ export function FleetMap({
         const route: [number, number][] = [[leg.start.lat, leg.start.lng], [leg.end.lat, leg.end.lng]];
         route.forEach((point) => bounds.extend(point));
         leaflet.polyline(route, { color: pinned ? "#009bc4" : "#071a2b", weight: pinned ? 4 : 2, dashArray: pinned ? undefined : "3 8", opacity: pinned ? 1 : 0.55 }).addTo(map);
-        leaflet.circleMarker(route[0], { radius: 7, color: "#071a2b", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · START`);
-        leaflet.circleMarker(route[1], { radius: 7, color: "#009bc4", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · FINISH`);
+        leaflet.circleMarker(route[0], { radius: 7, color: "#071a2b", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "PARTENZA" : "START"}`);
+        leaflet.circleMarker(route[1], { radius: 7, color: "#009bc4", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "ARRIVO" : "FINISH"}`);
       }
 
       for (const track of tracks) {
@@ -88,11 +91,11 @@ export function FleetMap({
         bounds.extend([lat, lng]);
         const icon = leaflet.divIcon({
           className: "fleet-marker-wrap",
-          html: markerHtml(vessel.name, vessel.color, point?.course ?? position.course, isReplay),
+          html: markerHtml(vessel.name, vessel.color, point?.course ?? position.course, isReplay, language),
           iconAnchor: [20, 28],
         });
         const marker = leaflet.marker([lat, lng], { icon }).addTo(map).bindPopup(
-          `<b>${vessel.name}</b><br>${lat.toFixed(5)}° N, ${lng.toFixed(5)}° E<br>Received ${receivedLabel(point?.receivedAt ?? position.receivedAt)}`,
+          `<b>${vessel.name}</b><br>${lat.toFixed(5)}° N, ${lng.toFixed(5)}° E<br>${language === "it" ? "Ricevuto" : "Received"} ${receivedLabel(point?.receivedAt ?? position.receivedAt)}`,
         );
         markerRefs.current.set(vessel.mmsi, marker);
       }
@@ -105,7 +108,7 @@ export function FleetMap({
       mapRef.current = null;
       removeMap?.();
     };
-  }, [legs, pinnedLegId, tracks, vessels]);
+  }, [language, legs, pinnedLegId, tracks, vessels]);
 
   useEffect(() => {
     if (!pinnedLegId || !replayAt || !mapRef.current) return;
@@ -122,9 +125,9 @@ export function FleetMap({
     <div className="fleet-map-shell">
       <div ref={containerRef} className="fleet-map" aria-label="Prima Regatina route and recorded fleet tracks" />
       {!pinnedLegId && <div className="fleet-map-legend">
-        {tracks.map((track) => <div key={track.mmsi}><i style={{ background: track.color }} /><span>{track.name}</span><time>{track.points.length} reports</time></div>)}
-        <div className="track-key"><i /><span>Dashed</span><time>outside leg</time></div>
-        <div className="track-key solid"><i /><span>Solid</span><time>in regatta</time></div>
+        {tracks.map((track) => <div key={track.mmsi}><i style={{ background: track.color }} /><span>{track.name}</span><time>{track.points.length} {language === "it" ? "rapporti" : "reports"}</time></div>)}
+        <div className="track-key"><i /><span>{language === "it" ? "Tratteggiata" : "Dashed"}</span><time>{language === "it" ? "fuori regata" : "outside leg"}</time></div>
+        <div className="track-key solid"><i /><span>{language === "it" ? "Continua" : "Solid"}</span><time>{language === "it" ? "in regata" : "in regatta"}</time></div>
       </div>}
     </div>
   );

@@ -311,6 +311,8 @@ footer {
 }
 footer span { color: var(--paper); letter-spacing: .14em; }
 footer p { margin: 0; }
+.language-toggle { flex: 0 0 auto; color: var(--paper); border-color: rgba(255,255,255,.55); }
+.language-toggle:hover:not(:disabled) { color: var(--ink); background: var(--paper); border-color: var(--paper); }
 
 @media (max-width: 850px) {
   .hero { min-height: 540px; }
@@ -350,4 +352,5 @@ footer p { margin: 0; }
   .leaderboard-vessel { font-size: 19px; }
   dl { margin-top: 48px; }
   footer { align-items: start; flex-direction: column; }
+  .language-toggle { width: 100%; }
 }

@@ -1,6 +1,25 @@
-import { FleetDashboard } from "@/components/fleet-dashboard";
+"use client";
+
+import { useEffect, useState } from "react";
+import { FleetDashboard, type Language } from "@/components/fleet-dashboard";
 
 export default function Home() {
+  const [language, setLanguage] = useState<Language>("en");
+
+  useEffect(() => {
+    const savedLanguage = window.localStorage.getItem("first-mythos-language");
+    if (savedLanguage === "it") setLanguage("it");
+  }, []);
+
+  function toggleLanguage() {
+    setLanguage((current) => {
+      const next = current === "en" ? "it" : "en";
+      window.localStorage.setItem("first-mythos-language", next);
+      return next;
+    });
+  }
+
+  const italian = language === "it";
   return (
     <main>
       <header className="hero">
@@ -15,10 +34,11 @@ export default function Home() {
           />
         </div>
       </header>
-      <FleetDashboard />
+      <FleetDashboard language={language} />
       <footer>
         <span>FIRST MYTHOS CUP / FIRST 36 FLEET</span>
-        <p>Positions are last-known AIS reports and may be delayed. First 36 is a Beneteau model reference.</p>
+        <p>{italian ? "Le posizioni sono gli ultimi rapporti AIS disponibili e possono essere ritardati. First 36 è un modello Beneteau." : "Positions are last-known AIS reports and may be delayed. First 36 is a Beneteau model reference."}</p>
+        <button type="button" className="language-toggle" onClick={toggleLanguage} aria-label={italian ? "Passa all'inglese" : "Switch to Italian"}>{italian ? "EN" : "IT"}</button>
       </footer>
     </main>
   );
