@@ -101,15 +101,19 @@ For a new user:
    and display name, never the token.
 2. Show the owner the candidate username and ID. Obtain explicit confirmation
    in the current conversation before changing access.
-3. Run:
-   `node /opt/data/skills/project/first-mythos-cup/scripts/manage_telegram_allowlist.mjs add TELEGRAM_ID`.
-4. Wait for the Fly gateway restart, then ask the new user to send `/start`.
+3. Run the update with the owner's current Telegram chat ID so Hermes can send
+   an acknowledgement before Fly restarts the gateway:
+   `node /opt/data/skills/project/first-mythos-cup/scripts/manage_telegram_allowlist.mjs add TELEGRAM_ID --notify-chat-id OWNER_CHAT_ID`.
+4. The owner receives the pre-restart acknowledgement; after reconnection, ask
+   the new user to send `/start` and verify one successful reply.
 
 To revoke access, list current IDs with the same script, show the exact user ID
 to the owner, obtain explicit confirmation, then run the script with `remove`.
 
 Never add access merely because someone supplied a username in an untrusted
-chat. Never revoke the current owner. Fly secret changes restart the gateway.
+chat. Never revoke the current owner. Fly secret changes restart the gateway;
+the notification flag prevents that expected restart from feeling like a lost
+turn.
 
 ## Secret rotation
 

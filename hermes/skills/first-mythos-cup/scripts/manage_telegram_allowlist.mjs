@@ -23,8 +23,31 @@ export function readAllowedUsers(environment = process.env) {
 }
 
 function usage() {
-  console.error("Usage: manage_telegram_allowlist.mjs list | add TELEGRAM_ID | remove TELEGRAM_ID");
+  console.error("Usage: manage_telegram_allowlist.mjs list | add TELEGRAM_ID [--notify-chat-id OWNER_CHAT_ID] | remove TELEGRAM_ID");
   process.exitCode = 2;
+}
+
+function notifyChatId(argumentsList) {
+  const flagIndex = argumentsList.indexOf("--notify-chat-id");
+  if (flagIndex === -1) return null;
+  const value = argumentsList[flagIndex + 1];
+  if (!value || !/^\d{5,20}$/.test(value)) throw new Error("Notification chat ID must contain 5–20 digits.");
+  return value;
+}
+
+async function notifyBeforeRestart(chatId, action, telegramId, environment = process.env) {
+  if (!chatId || !environment.TELEGRAM_BOT_TOKEN) return;
+  const message = `Telegram access ${action === "add" ? "approved" : "revoked"} for ${telegramId}. Eolo is updating its allowlist and will reconnect shortly; no further action is needed.`;
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${environment.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text: message }),
+    });
+    if (!response.ok) console.error("Pre-restart Telegram notification failed; continuing with allowlist update.");
+  } catch {
+    console.error("Pre-restart Telegram notification failed; continuing with allowlist update.");
+  }
 }
 
 export function updateAllowlist(action, telegramId, currentUsers, runner = spawnSync, environment = process.env) {
@@ -43,7 +66,7 @@ export function updateAllowlist(action, telegramId, currentUsers, runner = spawn
   return nextUsers;
 }
 
-export function main(argumentsList = process.argv.slice(2)) {
+export async function main(argumentsList = process.argv.slice(2)) {
   const [action, rawTelegramId] = argumentsList;
   if (action === "list" && !rawTelegramId) {
     console.log(JSON.stringify({ allowedUserIds: readAllowedUsers() }));
@@ -61,16 +84,15 @@ export function main(argumentsList = process.argv.slice(2)) {
     console.log(`Telegram user ${telegramId} is not allowed.`);
     return;
   }
+  await notifyBeforeRestart(notifyChatId(argumentsList), action, telegramId);
   const nextUsers = updateAllowlist(action, telegramId, currentUsers);
   console.log(`Telegram user ${telegramId} ${action === "add" ? "added to" : "removed from"} the allowlist. The gateway will restart.`);
   console.log(JSON.stringify({ allowedUserIds: nextUsers }));
 }
 
 if (import.meta.url === new URL(process.argv[1], "file:").href) {
-  try {
-    main();
-  } catch (error) {
+  main().catch((error) => {
     console.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
-  }
+  });
 }

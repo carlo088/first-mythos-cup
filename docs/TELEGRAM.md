@@ -41,9 +41,12 @@ Only after confirmation, Hermes runs the project script on Fly:
 node /opt/data/skills/project/first-mythos-cup/scripts/manage_telegram_allowlist.mjs add TELEGRAM_ID
 ```
 
-It updates the Fly secret and restarts the gateway. Removal uses `remove` with
-the same confirmation rule. Never allow `*`, remove the current owner, or show
-the bot token.
+In an owner Telegram turn, include `--notify-chat-id OWNER_CHAT_ID`; the script
+sends a short acknowledgement before the Fly secret update interrupts the
+gateway, so the owner does not see an unexplained shutdown. It then updates the
+Fly secret and restarts the gateway. Removal uses `remove` with the same
+confirmation rule. Never allow `*`, remove the current owner, or show the bot
+token.
 
 ## Sessions
 
