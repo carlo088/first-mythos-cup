@@ -60,12 +60,14 @@ terminal call that loads `/opt/data/.env` and runs:
 node /opt/data/skills/project/first-mythos-cup/scripts/publish_web.mjs
 ```
 
-The script pushes `main`, waits for the exact Git commit's Vercel deployment,
-and checks the dashboard, vessel API, and leaderboard API. Do not separately
-load generic GitHub skills, repeat deployment polling through model turns, or
-re-run checks already performed by this script. If it fails, inspect only the
-reported failing layer. Never enable paid AIS calls merely to validate a
-deployment.
+The script configures the protected GitHub credential helper, fetches and
+rebases focused local commits onto the latest `origin/main`, pushes `main`,
+waits for the exact Git commit's Vercel deployment, and checks the dashboard,
+vessel API, and leaderboard API. A real rebase conflict stops without pushing.
+Do not separately load generic GitHub skills, repeat deployment polling through
+model turns, or re-run checks already performed by this script. If it fails,
+inspect only the reported failing layer. Never enable paid AIS calls merely to
+validate a deployment.
 
 ## Model TPM discipline
 

@@ -13,6 +13,13 @@ function git(...args) {
   return result.stdout.trim();
 }
 
+function command(name, ...args) {
+  const result = spawnSync(name, args, { encoding: "utf8" });
+  if (result.status !== 0) {
+    throw new Error(`${name} ${args[0]} failed: ${(result.stderr || result.stdout).trim()}`);
+  }
+}
+
 export function selectDeployment(deployments, commitSha) {
   return deployments.find((deployment) => deployment?.meta?.githubCommitSha === commitSha) ?? null;
 }
@@ -59,8 +66,11 @@ export async function main() {
   const status = git("status", "--porcelain");
   const branch = git("branch", "--show-current");
   assertPublishableCheckout(status, branch);
-  const commitSha = git("rev-parse", "HEAD");
 
+  command("gh", "auth", "setup-git", "--hostname", "github.com");
+  git("fetch", "origin");
+  git("rebase", "origin/main");
+  const commitSha = git("rev-parse", "HEAD");
   git("push", "origin", "main");
   const deployment = await waitForProduction(commitSha);
 
