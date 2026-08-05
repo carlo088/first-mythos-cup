@@ -39,7 +39,7 @@ test("adds the six-hour idle reset and fresh command without replacing persisten
   assert.match(updated, /session_reset:\n  mode: idle\n  idle_minutes: 360/);
   assert.match(updated, /agent:\n  api_max_retries: 2/);
   assert.match(updated, /compression:\n  enabled: true\n  threshold: 0\.05/);
-  assert.match(updated, /quick_commands:\n  fresh:\n    type: alias\n    target: \/new now/);
+  assert.match(updated, /quick_commands:\n  fresh:\n    type: alias\n    target: \/new --yes/);
   assert.match(updated, /platforms:\n  telegram:\n    enabled: true/);
 });
 
@@ -49,7 +49,7 @@ test("upgrades the fresh alias without replacing other persistent settings", () 
 
   assert.match(updated, /agent:\n  api_max_retries: 2\n  max_turns: 250/);
   assert.match(updated, /old_session:\n    type: alias\n    target: \/new\n/);
-  assert.match(updated, /target: \/new now/);
+  assert.match(updated, /target: \/new --yes/);
   assert.match(updated, /command: uptime/);
   assert.equal(renderRuntimeDefaults(updated), updated);
 });

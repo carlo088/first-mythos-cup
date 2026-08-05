@@ -30,7 +30,7 @@ session_reset:
 quick_commands:
   fresh:
     type: "alias"
-    target: "/new now"
+    target: "/new --yes"
 
 display:
   tool_progress: "all"

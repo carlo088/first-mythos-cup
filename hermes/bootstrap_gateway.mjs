@@ -108,7 +108,7 @@ export function renderRuntimeDefaults(config) {
 
   const quickCommandsMatch = updated.match(/^quick_commands:\s*(?:#.*)?$/m);
   if (!quickCommandsMatch) {
-    return `${updated.trimEnd()}\n\nquick_commands:\n  fresh:\n    type: alias\n    target: /new now\n`;
+    return `${updated.trimEnd()}\n\nquick_commands:\n  fresh:\n    type: alias\n    target: /new --yes\n`;
   }
 
   const sectionStart = (quickCommandsMatch.index ?? 0) + quickCommandsMatch[0].length;
@@ -125,11 +125,14 @@ export function renderRuntimeDefaults(config) {
       ? sectionEnd
       : freshStart + freshMatch[0].length + nextCommand;
     const freshBlock = updated.slice(freshStart, freshEnd);
-    const upgraded = freshBlock.replace(/(^\s+target:\s*["']?)\/new(["']?\s*$)/m, "$1/new now$2");
+    const upgraded = freshBlock.replace(
+      /(^\s+target:\s*["']?)\/new(?: now)?(["']?\s*$)/m,
+      "$1/new --yes$2",
+    );
     return `${updated.slice(0, freshStart)}${upgraded}${updated.slice(freshEnd)}`;
   }
 
-  return `${updated.slice(0, sectionEnd).trimEnd()}\n  fresh:\n    type: alias\n    target: /new now\n${updated.slice(sectionEnd)}`;
+  return `${updated.slice(0, sectionEnd).trimEnd()}\n  fresh:\n    type: alias\n    target: /new --yes\n${updated.slice(sectionEnd)}`;
 }
 
 export function persistConfiguredModel(environment = process.env) {

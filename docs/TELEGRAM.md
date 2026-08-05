@@ -52,8 +52,9 @@ a gateway restart.
 
 Telegram conversations start a fresh session after six hours of inactivity.
 Active work is not interrupted by that idle policy. Use `/fresh` to start a new
-session immediately; it is an alias for Hermes' built-in `/new now` command, so
-Telegram does not wait for an interactive confirmation prompt.
+session immediately; it is an alias for Hermes' built-in `/new --yes` command,
+so Telegram neither waits for an interactive confirmation prompt nor mistakes
+the confirmation word `now` for a session title.
 
 Hermes compresses active context at 5% of Luna's context window (about 52,500
 tokens) because the API account's tokens-per-minute limit is materially smaller
