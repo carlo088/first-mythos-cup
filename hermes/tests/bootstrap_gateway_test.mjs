@@ -33,8 +33,21 @@ test("adds the six-hour idle reset and fresh command without replacing persisten
   const updated = renderRuntimeDefaults(config);
 
   assert.match(updated, /session_reset:\n  mode: idle\n  idle_minutes: 360/);
-  assert.match(updated, /quick_commands:\n  fresh:\n    type: alias\n    target: \/new/);
+  assert.match(updated, /agent:\n  api_max_retries: 2/);
+  assert.match(updated, /compression:\n  enabled: true\n  threshold: 0\.05/);
+  assert.match(updated, /quick_commands:\n  fresh:\n    type: alias\n    target: \/new now/);
   assert.match(updated, /platforms:\n  telegram:\n    enabled: true/);
+});
+
+test("upgrades the fresh alias without replacing other persistent settings", () => {
+  const config = `agent:\n  max_turns: 250\nquick_commands:\n  old_session:\n    type: alias\n    target: /new\n  fresh:\n    type: alias\n    target: /new\n  status:\n    type: exec\n    command: uptime\n`;
+  const updated = renderRuntimeDefaults(config);
+
+  assert.match(updated, /agent:\n  api_max_retries: 2\n  max_turns: 250/);
+  assert.match(updated, /old_session:\n    type: alias\n    target: \/new\n/);
+  assert.match(updated, /target: \/new now/);
+  assert.match(updated, /command: uptime/);
+  assert.equal(renderRuntimeDefaults(updated), updated);
 });
 
 test("preserves customized reset settings and existing quick commands", () => {

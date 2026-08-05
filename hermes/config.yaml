@@ -10,6 +10,15 @@ terminal:
 
 agent:
   max_turns: 250
+  api_max_retries: 2
+
+compression:
+  enabled: true
+  threshold: 0.05
+  target_ratio: 0.20
+  protect_last_n: 20
+  protect_first_n: 0
+  hygiene_hard_message_limit: 100
 
 gateway:
   busy_input_mode: "queue"
@@ -21,7 +30,7 @@ session_reset:
 quick_commands:
   fresh:
     type: "alias"
-    target: "/new"
+    target: "/new now"
 
 display:
   tool_progress: "all"

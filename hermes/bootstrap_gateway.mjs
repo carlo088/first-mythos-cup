@@ -80,13 +80,35 @@ export function renderConfiguredModel(config, model) {
 export function renderRuntimeDefaults(config) {
   let updated = config;
 
+  const ensureMappingEntry = (source, sectionName, key, value) => {
+    const sectionMatch = source.match(new RegExp(`^${sectionName}:\\s*(?:#.*)?$`, "m"));
+    if (!sectionMatch) {
+      return `${source.trimEnd()}\n\n${sectionName}:\n  ${key}: ${value}\n`;
+    }
+
+    const sectionStart = (sectionMatch.index ?? 0) + sectionMatch[0].length;
+    const remainder = source.slice(sectionStart);
+    const nextSection = remainder.search(/^\\S/m);
+    const sectionEnd = nextSection === -1 ? source.length : sectionStart + nextSection;
+    const section = source.slice(sectionStart, sectionEnd);
+    if (new RegExp(`^\\s+${key}:`, "m").test(section)) return source;
+
+    return `${source.slice(0, sectionStart)}\n  ${key}: ${value}${source.slice(sectionStart)}`;
+  };
+
+  updated = ensureMappingEntry(updated, "agent", "api_max_retries", "2");
+
+  if (!/^compression:\s*(?:#.*)?$/m.test(updated)) {
+    updated = `${updated.trimEnd()}\n\ncompression:\n  enabled: true\n  threshold: 0.05\n  target_ratio: 0.20\n  protect_last_n: 20\n  protect_first_n: 0\n  hygiene_hard_message_limit: 100\n`;
+  }
+
   if (!/^session_reset:\s*(?:#.*)?$/m.test(updated)) {
     updated = `${updated.trimEnd()}\n\nsession_reset:\n  mode: idle\n  idle_minutes: 360\n`;
   }
 
   const quickCommandsMatch = updated.match(/^quick_commands:\s*(?:#.*)?$/m);
   if (!quickCommandsMatch) {
-    return `${updated.trimEnd()}\n\nquick_commands:\n  fresh:\n    type: alias\n    target: /new\n`;
+    return `${updated.trimEnd()}\n\nquick_commands:\n  fresh:\n    type: alias\n    target: /new now\n`;
   }
 
   const sectionStart = (quickCommandsMatch.index ?? 0) + quickCommandsMatch[0].length;
@@ -94,9 +116,20 @@ export function renderRuntimeDefaults(config) {
   const nextSection = remainder.search(/^\S/m);
   const sectionEnd = nextSection === -1 ? updated.length : sectionStart + nextSection;
   const section = updated.slice(sectionStart, sectionEnd);
-  if (/^\s+fresh:\s*(?:#.*)?$/m.test(section)) return updated;
+  const freshMatch = section.match(/^  fresh:\s*(?:#.*)?$/m);
+  if (freshMatch) {
+    const freshStart = sectionStart + (freshMatch.index ?? 0);
+    const freshRemainder = updated.slice(freshStart + freshMatch[0].length, sectionEnd);
+    const nextCommand = freshRemainder.search(/^  \S/m);
+    const freshEnd = nextCommand === -1
+      ? sectionEnd
+      : freshStart + freshMatch[0].length + nextCommand;
+    const freshBlock = updated.slice(freshStart, freshEnd);
+    const upgraded = freshBlock.replace(/(^\s+target:\s*["']?)\/new(["']?\s*$)/m, "$1/new now$2");
+    return `${updated.slice(0, freshStart)}${upgraded}${updated.slice(freshEnd)}`;
+  }
 
-  return `${updated.slice(0, sectionEnd).trimEnd()}\n  fresh:\n    type: alias\n    target: /new\n${updated.slice(sectionEnd)}`;
+  return `${updated.slice(0, sectionEnd).trimEnd()}\n  fresh:\n    type: alias\n    target: /new now\n${updated.slice(sectionEnd)}`;
 }
 
 export function persistConfiguredModel(environment = process.env) {
