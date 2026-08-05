@@ -40,7 +40,7 @@ npm run verify
 git diff --check
 ```
 
-The persistent Fly machine has 2 GB of memory and runs the Hermes gateway at
+The persistent Fly machine has 4 GB of memory and runs the Hermes gateway at
 the same time. Do **not** run `npm run build`, `next build`, or `vercel build`
 locally on Fly: Next.js production compilation can exhaust the VM and interrupt
 the active agent. The canonical production build runs remotely on Vercel after
@@ -53,10 +53,19 @@ build output, logs, or provider payloads. Push focused commits to `main` only
 after the owner explicitly requests publication or deployment. GitHub pushes
 trigger the Vercel production build.
 
-After a push, use Vercel CLI with the protected token and the configured
-`VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` to inspect the remotely built production
-deployment and its logs. Confirm both the dashboard and the saved-snapshot API.
-Never enable paid AIS calls merely to validate a deployment.
+For an ordinary web publish, commit the focused verified change, then make one
+terminal call that loads `/opt/data/.env` and runs:
+
+```bash
+node /opt/data/skills/project/first-mythos-cup/scripts/publish_web.mjs
+```
+
+The script pushes `main`, waits for the exact Git commit's Vercel deployment,
+and checks the dashboard, vessel API, and leaderboard API. Do not separately
+load generic GitHub skills, repeat deployment polling through model turns, or
+re-run checks already performed by this script. If it fails, inspect only the
+reported failing layer. Never enable paid AIS calls merely to validate a
+deployment.
 
 ## Model TPM discipline
 
