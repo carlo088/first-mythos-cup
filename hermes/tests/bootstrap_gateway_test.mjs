@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { renderConfiguredModel, renderRuntimeDefaults } from "../bootstrap_gateway.mjs";
+import {
+  configureGitHubCredentialHelper,
+  renderConfiguredModel,
+  renderRuntimeDefaults,
+} from "../bootstrap_gateway.mjs";
 
 test("resolves an environment placeholder in the model section", () => {
   const config = `model:\n  provider: openai-api\n  default: \"\${HERMES_MODEL}\"\nagent:\n  max_turns: 250\n`;
@@ -57,4 +61,17 @@ test("preserves customized reset settings and existing quick commands", () => {
   assert.match(updated, /mode: daily/);
   assert.match(updated, /command: uptime\n  fresh:/);
   assert.equal(renderRuntimeDefaults(updated), updated);
+});
+
+test("configures GitHub CLI as Git's credential helper without embedding the token", () => {
+  const calls = [];
+  const runner = (...args) => {
+    calls.push(args);
+    return { status: 0 };
+  };
+
+  assert.equal(configureGitHubCredentialHelper({ GITHUB_TOKEN: "test-token" }, runner), true);
+  assert.deepEqual(calls[0][0], "gh");
+  assert.deepEqual(calls[0][1], ["auth", "setup-git", "--hostname", "github.com"]);
+  assert.equal(calls[0][1].includes("test-token"), false);
 });

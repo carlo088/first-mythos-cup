@@ -188,9 +188,24 @@ export function persistEnvironment(environment = process.env) {
   }
 }
 
+export function configureGitHubCredentialHelper(environment = process.env, runner = spawnSync) {
+  if (!environment.GITHUB_TOKEN) return true;
+  const configured = runner(
+    "gh",
+    ["auth", "setup-git", "--hostname", "github.com"],
+    { stdio: "inherit", env: environment },
+  );
+  if (configured.status !== 0) {
+    console.error("GitHub credential helper setup failed; Git pushes may require manual repair.");
+    return false;
+  }
+  return true;
+}
+
 export function main() {
   persistEnvironment();
   persistConfiguredModel();
+  configureGitHubCredentialHelper();
   mkdirSync(workspacePath, { recursive: true });
   if (!existsSync(join(repositoryPath, ".git"))) {
     const clone = spawnSync(

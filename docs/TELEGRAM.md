@@ -60,3 +60,7 @@ tokens) because the API account's tokens-per-minute limit is materially smaller
 than Luna's full context window. It makes at most two provider attempts per turn.
 These safeguards keep tool-heavy sessions from repeatedly resending a large
 prompt into the same rolling rate-limit window.
+
+On gateway startup, Git is configured to use GitHub CLI's credential helper.
+The helper reads `GITHUB_TOKEN` from the environment at request time; the token
+is not embedded in the repository remote URL or committed configuration.
