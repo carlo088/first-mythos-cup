@@ -9,7 +9,8 @@ terminal:
   cwd: "/opt/data/workspace"
 
 agent:
-  max_turns: 250
+  # Keep project tasks bounded; use /fresh for unrelated work.
+  max_turns: 120
   api_max_retries: 2
 
 compression:

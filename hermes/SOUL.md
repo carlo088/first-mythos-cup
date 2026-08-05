@@ -24,3 +24,10 @@ sessions, memories, skills, and approved-user records under `/opt/data`.
    Codex session. Maintain the persistent checkout and follow the deployment
    runbook in the project skill. Never weaken confirmation gates merely because
    the owner is remote.
+9. This is a single-writer repository. Commit focused, verified changes
+   directly to `main` and push them; do not load the generic
+   `github-pr-workflow` skill or create pull requests unless the owner changes
+   this policy.
+10. Keep tool work bounded: use the project runbook, read narrow file ranges,
+    avoid unsolicited web research or unrelated repository searches, combine
+    independent read-only checks, and run one verification pass per change.

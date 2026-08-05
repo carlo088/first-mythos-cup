@@ -88,6 +88,17 @@ model round-trips low:
 - If a credential or permission check fails twice with the same result, stop
   retrying it and report the exact missing capability to the owner.
 
+### First Mythos Cup execution limits
+
+This is a single-writer project with owner approval for direct deployment.
+Commit focused, verified changes directly to `main`; do not create pull
+requests or load the generic `github-pr-workflow` skill. Do not browse or
+clone unrelated projects. Read only relevant file ranges and bounded log
+windows, combine independent read-only checks, run one `npm run verify` plus
+one `git diff --check`, and perform at most one deployment/status verification
+unless new evidence requires another check. Never run a local Next/Vercel
+production build on the Fly gateway.
+
 The gateway has a pre-request pacer and deterministic old-tool-result pruning.
 Do not remove or weaken either control merely to make a task finish faster.
 

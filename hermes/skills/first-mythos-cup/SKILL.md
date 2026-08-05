@@ -13,6 +13,17 @@ prerequisites:
 Use this skill for vessel locations, vessel identity, provider status or cost,
 the race application, and Telegram user access.
 
+## Project workflow and tool budget
+
+This repository has one authorized writer. Make focused commits directly on
+`main` and push them; do not create pull requests and do not load the generic
+`github-pr-workflow` skill unless the owner explicitly changes this policy.
+Avoid web browsing unless the owner requests it or a current external fact is
+required. Do one bounded inspection (narrow file ranges and relevant log
+windows), combine independent read-only checks, run one `npm run verify` and
+one `git diff --check`, then stop. Do not run local Next/Vercel production
+builds or repeat unchanged auth/status/deployment checks.
+
 ## Fleet and application
 
 - Isera — MMSI `247520340`

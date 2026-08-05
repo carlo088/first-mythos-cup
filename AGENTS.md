@@ -32,6 +32,12 @@ This repository is shared by Codex and the Hermes agent. Read this file, `.agent
 - Treat AIS data as last-known telemetry; always display its `received` time and stale state.
 - Never interpret course `511` as a real bearing; it means unavailable.
 - Run type checking and tests before committing.
+- This is a single-writer repository. With the owner's explicit approval,
+  commit focused changes directly to `main` and push them; do not create PRs or
+  load the generic `github-pr-workflow` skill for this project.
+- Keep Hermes work bounded: no unsolicited web research or unrelated repo
+  searches, narrow file/log reads, combined read-only checks, and one
+  verification pass per change.
 
 ## Infrastructure
 
