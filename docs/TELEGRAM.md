@@ -64,3 +64,8 @@ prompt into the same rolling rate-limit window.
 On gateway startup, Git is configured to use GitHub CLI's credential helper.
 The helper reads `GITHUB_TOKEN` from the environment at request time; the token
 is not embedded in the repository remote URL or committed configuration.
+For a fine-grained personal access token, select the `first-mythos-cup`
+repository and grant **Repository permissions → Contents: Read and write**
+(Metadata remains read-only). A token that can authenticate and read the public
+repository but lacks that Contents permission will still fail every push with
+HTTP 403. Replace the Fly `GITHUB_TOKEN` secret after changing the token.
