@@ -5,7 +5,7 @@ import { FleetMap, type MappedVessel } from "@/components/fleet-map";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import { FLEET, type FleetVessel } from "@/lib/vessels";
 import { sortLeaderboard, type LeaderboardEntry } from "@/lib/leaderboard";
-import { formatElapsed, type ImportantLeg, type LegResult, type LegTrack } from "@/lib/important-leg";
+import { type ImportantLeg, type LegResult, type LegTrack } from "@/lib/important-leg";
 
 export type Language = "en" | "it";
 
@@ -137,7 +137,6 @@ export function FleetDashboard({ language }: { language: Language }) {
   const [legState, setLegState] = useState<LegState>({ status: "loading" });
   const [pinnedLegId, setPinnedLegId] = useState<string | null>(null);
   const [replayIndex, setReplayIndex] = useState(0);
-  const [savingScore, setSavingScore] = useState<string | null>(null);
 
   const loadFleet = useCallback(async () => {
     setRefreshing(true);
@@ -197,21 +196,6 @@ export function FleetDashboard({ language }: { language: Language }) {
     setReplayIndex(0);
   }
 
-  async function saveRaceScore(legId: string, mmsi: string, points: number) {
-    setSavingScore(mmsi);
-    try {
-      const response = await fetch("/api/legs/scores", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ legId, mmsi, points }),
-      });
-      if (!response.ok) throw new Error("Score save failed");
-      await loadFleet();
-    } finally {
-      setSavingScore(null);
-    }
-  }
-
   return (
     <section className="fleet-section" aria-labelledby="fleet-title">
       <div className="section-heading">
@@ -243,7 +227,7 @@ export function FleetDashboard({ language }: { language: Language }) {
           <details className="regattas-dropdown">
             <summary><span className="section-number">03 / {copy.races.toUpperCase()} · {legState.races.length}</span><h3>{copy.races}</h3><i>⌄</i></summary>
             <div className="regatta-table" role="table" aria-label={copy.races}>
-            <div className="regatta-row regatta-header" role="row"><span>{copy.status}</span><span>{copy.race}</span><span>{copy.startEnd}</span><span>{copy.arrivalOrder}</span><span>{copy.points}</span><span /></div>
+            <div className="regatta-row regatta-header" role="row"><span>{copy.status}</span><span>{copy.race}</span><span>{copy.startEnd}</span><span>{copy.arrivalOrder}</span><span /></div>
             {legState.races.map((race) => {
               const isLive = race.leg.status === "active";
               return <div className="regatta-row regatta-flat-row" role="row" key={race.leg.id}>
@@ -251,7 +235,6 @@ export function FleetDashboard({ language }: { language: Language }) {
                   <strong>{race.leg.name}</strong>
                   <span className="regatta-times"><time>{new Date(race.leg.startsAt).toLocaleString([], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}</time><time>{new Date(race.leg.endsAt).toLocaleString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC</time></span>
                   <span className="compact-arrivals">{isLive ? copy.progress : race.results.map((result) => `${result.rank} ${result.name}`).join(" · ")}</span>
-                  <span className="compact-scores">{isLive ? "—" : race.results.map((result) => { const current = race.scores.find((score) => score.mmsi === result.mmsi)?.points ?? 0; return <label key={result.mmsi}>{result.name.slice(0, 1)}<input aria-label={`${race.leg.name} ${result.name} points`} type="number" min={0} max={100} defaultValue={current} disabled={savingScore === result.mmsi} onBlur={(event) => void saveRaceScore(race.leg.id, result.mmsi, Number(event.target.value))} /></label>; })}</span>
                   <button type="button" className={pinnedLegId === race.leg.id ? "is-pinned" : ""} onClick={() => togglePinnedRace(race.leg.id)}>{pinnedLegId === race.leg.id ? copy.unpin : copy.pin}</button>
               </div>;
             })}

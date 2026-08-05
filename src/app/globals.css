@@ -188,7 +188,7 @@ button:disabled { opacity: .55; cursor: wait; }
 .regattas-dropdown > summary i { color: var(--blue); font-size: 22px; font-style: normal; transition: transform .2s; }
 .regattas-dropdown[open] > summary i { transform: rotate(180deg); }
 .regatta-table { border-top: 1px solid var(--ink); }
-.regatta-row { display: grid; grid-template-columns: 78px 1.05fr 1.1fr 1.25fr 1.15fr 66px; align-items: center; gap: 15px; width: 100%; min-height: 72px; padding: 0 18px; border: 0; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.6); text-align: left; }
+.regatta-row { display: grid; grid-template-columns: 78px 1.05fr 1.1fr 1.25fr 66px; align-items: center; gap: 15px; width: 100%; min-height: 72px; padding: 0 18px; border: 0; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.6); text-align: left; }
 .regatta-header { min-height: 38px; color: #718392; background: transparent; font: 400 9px "DM Mono", monospace; letter-spacing: .11em; text-transform: uppercase; }
 .regatta-trigger { color: var(--ink); text-transform: none; }
 .regatta-trigger:hover { color: var(--ink) !important; background: rgba(255,255,255,.95) !important; }
@@ -201,9 +201,6 @@ button:disabled { opacity: .55; cursor: wait; }
 .regatta-flat-row > strong { font-size: 18px; letter-spacing: -.035em; }
 .regatta-times { display: grid; gap: 4px; color: #617685; font: 500 9px "DM Mono", monospace; text-transform: uppercase; }
 .compact-arrivals { color: #455c69; font: 600 9px/1.5 "DM Mono", monospace; text-transform: uppercase; }
-.compact-scores { display: flex; flex-wrap: wrap; gap: 5px; color: #718392; font: 600 8px "DM Mono", monospace; }
-.compact-scores label { display: flex; align-items: center; gap: 3px; }
-.compact-scores input { width: 36px; padding: 5px 3px; border: 1px solid var(--line); background: var(--paper); font: 600 9px "DM Mono", monospace; }
 .regatta-flat-row > button { justify-self: end; padding: 9px 11px; }
 .regatta-flat-row > button.is-pinned { color: var(--paper); background: var(--blue); border-color: var(--blue); }
 .regatta-chevron { color: var(--blue); font-size: 19px; text-align: right; transition: transform .2s; }
@@ -323,8 +320,7 @@ footer p { margin: 0; }
   .replay-panel { grid-template-columns: 1fr; }
   .replay-panel-wide output { text-align: left; }
   .race-scoring { grid-template-columns: 1fr; }
-  .regatta-row { grid-template-columns: 70px 1fr 1fr 62px; }
-  .regatta-row > :nth-child(4), .regatta-row > :nth-child(5) { display: none; }
+  .regatta-row { grid-template-columns: 70px minmax(100px, 1fr) minmax(130px, 1fr) minmax(130px, 1.2fr) 62px; }
   .regatta-arrivals ol { flex-wrap: wrap; }
 }
 
@@ -342,8 +338,13 @@ footer p { margin: 0; }
   .replay-under-map .replay-range { margin: 0 -16px; padding: 14px 16px 12px; border-bottom: 1px solid var(--line); background: var(--paper); }
   .leg-banner { align-items: start; flex-direction: column; }
   .leg-banner p { text-align: left; }
-  .regatta-row { grid-template-columns: 62px 1fr 52px; padding: 0 10px; gap: 8px; }
-  .regatta-row > :nth-child(3), .regatta-row > :nth-child(4), .regatta-row > :nth-child(5) { display: none; }
+  .regatta-header { display: none; }
+  .regatta-flat-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: repeat(4, auto); align-items: start; min-height: 0; padding: 15px 12px; gap: 8px 12px; }
+  .regatta-flat-row > .race-status { grid-column: 1; grid-row: 1; }
+  .regatta-flat-row > strong { grid-column: 1; grid-row: 2; }
+  .regatta-flat-row > .regatta-times { grid-column: 1; grid-row: 3; }
+  .regatta-flat-row > .compact-arrivals { grid-column: 1; grid-row: 4; }
+  .regatta-flat-row > button { grid-column: 2; grid-row: 1 / span 4; align-self: start; }
   .regatta-detail { grid-template-columns: 1fr; padding: 18px 12px; }
   .detail-heading { align-items: start; flex-direction: column; }
   .leaderboard-row { grid-template-columns: 45px 1fr 90px; gap: 10px; padding: 0 12px; }
