@@ -10,7 +10,14 @@ const envPath = join(hermesHome, ".env");
 const configPath = join(hermesHome, "config.yaml");
 const workspacePath = join(hermesHome, "workspace");
 const repositoryPath = join(workspacePath, "first-mythos-cup");
-const syncKeys = [
+export const SYNC_KEYS = [
+  "MYSHIPTRACKING_API_KEY",
+  "MYSHIPTRACKING_SECRET_KEY",
+  "AISTREAM_API_KEY",
+  "SUPABASE_URL",
+  "SUPABASE_PUBLISHABLE_KEY",
+  "SUPABASE_DATABASE_URL",
+  "SUPABASE_POOLER_HOST",
   "OPENAI_API_KEY",
   "TELEGRAM_BOT_TOKEN",
   "GFW_API_TOKEN",
@@ -24,6 +31,7 @@ const syncKeys = [
   "FLY_API_TOKEN",
   "SUPABASE_ACCESS_TOKEN",
   "SUPABASE_PROJECT_REF",
+  "VESSEL_CACHE_SECONDS",
 ];
 const seedOnceKeys = ["TELEGRAM_ALLOWED_USERS"];
 
@@ -179,7 +187,7 @@ export function persistEnvironment(environment = process.env) {
   const { lines, values } = parseEnv(existing);
   const updates = new Map();
 
-  for (const key of syncKeys) {
+  for (const key of SYNC_KEYS) {
     if (environment[key]) updates.set(key, environment[key]);
   }
   for (const key of seedOnceKeys) {

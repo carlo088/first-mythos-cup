@@ -16,7 +16,9 @@ This file contains identifiers and status only. Secret values live exclusively i
 - Project/database label: `first-mythos-cup`
 - Status: live with fleet tables, public-read RLS, three mock position rows, and three zero-point leaderboard rows.
 - Intended use: vessel position history and race scoring.
-- Publishable key, database URL, and password: `.env.local` only.
+- Publishable key, database URL, and password: local values remain in
+  `.env.local`; the Hermes runtime receives matching encrypted Fly secrets and
+  persists them in owner-readable `/opt/data/.env` for autonomous operations.
 
 ## Vessel APIs
 
@@ -29,7 +31,10 @@ This file contains identifiers and status only. Secret values live exclusively i
 
 - Hermes runtime: official `nousresearch/hermes-agent:latest` image on Fly, customized under `hermes/`.
 - Persistent state: Fly volume `/opt/data`; credentials are protected in `/opt/data/.env` and mirrored from Fly secrets without logging values.
-- Fly uses least privilege: install only OpenAI, Telegram, and GFW credentials. MyShipTracking, AISstream, and the Supabase database password remain out of the agent runtime until a feature explicitly requires them.
+- Fly receives the complete server environment required for autonomous
+  operation, including Supabase management and database access. Provider keys
+  remain protected by application mode and cost gates: mock vessel mode makes
+  no paid MyShipTracking calls, and AISstream stays inactive until verified.
 - Telegram adapter: Hermes' native gateway with persistent pairing authorization.
 - Gateway status: running and verified with a direct model response. Telegram remains disabled until `TELEGRAM_BOT_TOKEN` and the owner's numeric `TELEGRAM_ALLOWED_USERS` value are supplied.
 - Autonomous operations: the Fly volume contains a persistent Git checkout;

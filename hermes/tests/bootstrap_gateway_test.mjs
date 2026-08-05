@@ -2,10 +2,27 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  SYNC_KEYS,
   configureGitHubCredentialHelper,
   renderConfiguredModel,
   renderRuntimeDefaults,
 } from "../bootstrap_gateway.mjs";
+
+test("syncs the complete server environment into persistent Hermes state", () => {
+  for (const key of [
+    "MYSHIPTRACKING_API_KEY",
+    "MYSHIPTRACKING_SECRET_KEY",
+    "AISTREAM_API_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_PUBLISHABLE_KEY",
+    "SUPABASE_DATABASE_URL",
+    "SUPABASE_POOLER_HOST",
+    "SUPABASE_ACCESS_TOKEN",
+    "SUPABASE_PROJECT_REF",
+  ]) {
+    assert.equal(SYNC_KEYS.includes(key), true, `${key} must persist on Fly`);
+  }
+});
 
 test("resolves an environment placeholder in the model section", () => {
   const config = `model:\n  provider: openai-api\n  default: \"\${HERMES_MODEL}\"\nagent:\n  max_turns: 250\n`;
