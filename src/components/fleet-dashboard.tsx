@@ -194,8 +194,8 @@ export function FleetDashboard() {
         replayAt={replayAt}
       />
       {legState.status === "ready" && <div className="replay-panel replay-panel-wide replay-under-map">
+        <label className="replay-range"><span className="visually-hidden">Shared race clock</span><input aria-label="Replay shared race clock" type="range" min={0} max={Math.max(0, replayTimeline.length - 1)} value={Math.min(replayIndex, Math.max(0, replayTimeline.length - 1))} disabled={!pinnedLegId} onChange={(event) => setReplayIndex(Number(event.target.value))} /></label>
         <div className="replay-copy"><span className="section-number">02 / SHARED TRACKER</span><h3>{pinnedLegId ? mappedLegs.find((leg) => leg.id === pinnedLegId)?.name : "Pin a regata to replay"}</h3></div>
-        <label className="replay-range">Shared race clock<input aria-label="Replay shared race clock" type="range" min={0} max={Math.max(0, replayTimeline.length - 1)} value={Math.min(replayIndex, Math.max(0, replayTimeline.length - 1))} disabled={!pinnedLegId} onChange={(event) => setReplayIndex(Number(event.target.value))} /></label>
         <div className="replay-meta"><output>{replayAt ? `${new Date(replayAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC · ALL BOATS` : "No regata pinned"}</output>{pinnedLegId && <button type="button" onClick={() => setPinnedLegId(null)}>Unpin active regata</button>}</div>
       </div>}
       {legState.status === "error" && <div className="leaderboard-message error-card">{legState.message}</div>}

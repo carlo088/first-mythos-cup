@@ -121,11 +121,11 @@ export function FleetMap({
   return (
     <div className="fleet-map-shell">
       <div ref={containerRef} className="fleet-map" aria-label="Prima Regatina route and recorded fleet tracks" />
-      <div className="fleet-map-legend">
+      {!pinnedLegId && <div className="fleet-map-legend">
         {tracks.map((track) => <div key={track.mmsi}><i style={{ background: track.color }} /><span>{track.name}</span><time>{track.points.length} reports</time></div>)}
         <div className="track-key"><i /><span>Dashed</span><time>outside leg</time></div>
         <div className="track-key solid"><i /><span>Solid</span><time>in regatta</time></div>
-      </div>
+      </div>}
     </div>
   );
 }
