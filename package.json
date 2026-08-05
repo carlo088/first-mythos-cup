@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "hermes:fly:secrets": "node --env-file=.env.local scripts/fly-hermes-secrets.mjs",
+    "simulate:important-leg": "node --env-file=.env.local scripts/generate-important-leg.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node --test hermes/tests/*.mjs",
     "verify": "npm test && npm run typecheck"

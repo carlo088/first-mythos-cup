@@ -25,3 +25,4 @@ COPY hermes/SOUL.md /opt/hermes/docker/SOUL.md
 COPY hermes/skills/first-mythos-cup /opt/hermes/skills/project/first-mythos-cup
 COPY --chmod=0755 hermes/bootstrap_gateway.mjs /opt/hermes/bin/first-mythos-cup-gateway
 COPY --chmod=0755 hermes/api_rate_pacer.mjs /opt/hermes/bin/first-mythos-cup-api-pacer
+COPY --chmod=0755 hermes/vessel_ingestion_worker.mjs /opt/hermes/bin/first-mythos-cup-vessel-worker

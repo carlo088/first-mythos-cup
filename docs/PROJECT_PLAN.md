@@ -6,9 +6,9 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 
 ## Provider logic
 
-1. The active data mode is **saved mock snapshot**. Production and local development set `VESSEL_DATA_MODE=mock`, which makes zero vendor calls.
+1. The active data mode is **Supabase position history**. Current test rows are written by the Prima Regatina simulator and make zero vendor calls.
 2. MyShipTracking Vessel API v2 remains implemented behind an explicit `VESSEL_DATA_MODE=live` switch for future use.
-3. The app obtains either source only through the server endpoint `GET /api/vessels/[mmsi]`.
+3. The app reads latest positions only through `GET /api/vessels/[mmsi]`, and leg history/results through `GET /api/legs/important`; both read Supabase.
 4. Validate the MMSI against the known race fleet before returning data or spending a provider credit.
 5. If live mode is explicitly enabled, cache successful upstream responses for at least `VESSEL_CACHE_SECONDS` (default 60 seconds).
 6. Normalize course `511` to `null`, retain speed in knots, and calculate whether the report is stale.
@@ -24,8 +24,8 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 - [x] Persist the saved snapshot in Supabase with an idempotent migration and public-read RLS.
 - [x] Prepare the official persistent Hermes Agent image, Fly configuration, protected secret bootstrap, and project skill.
 - [x] Add native Telegram gateway instructions and guarded persistent pairing management.
-- [ ] Add a nautical map and course/race geometry.
-- [ ] Add a scheduled ingestion worker only after a call-budget calculation is approved.
+- [x] Add the multi-race map, full tracks, automatic in-leg styling, single pinned-race shared replay clock, and computed results.
+- [x] Add a Greece-time scheduled ingestion worker beside Hermes, guarded by `VESSEL_DATA_MODE=live`; keep mock mode active until live credit spending is approved.
 - [x] Connect GitHub to Vercel and deploy the dashboard/API at `first-mythos-cup.vercel.app`.
 - [x] Deploy the official Hermes gateway to Fly with an encrypted persistent volume and verify a direct model response.
 - [ ] Add the Telegram bot token and owner's numeric ID, then verify an end-to-end native Telegram reply.
@@ -34,4 +34,4 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 
 ## Cost guardrail
 
-The simple endpoint costs one credit per upstream call. At three vessels, polling once per minute would be 4,320 credits/day before caching effects. The current release uses a committed snapshot and therefore costs zero MyShipTracking credits. Any return to live mode or background schedule must state its projected daily and monthly credits before implementation.
+The simple endpoint costs one credit per upstream call. The configured live schedule would cost up to 42 credits per non-regatta day (14 daytime hourly cycles × 3 boats), plus 36 credits per active regatta hour (12 cycles × 3 boats). The current `VESSEL_DATA_MODE=mock` setting makes zero MyShipTracking calls.

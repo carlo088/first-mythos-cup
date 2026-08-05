@@ -1,127 +1,130 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import type { ImportantLeg, LegTrack } from "@/lib/important-leg";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import type { FleetVessel } from "@/lib/vessels";
-import { getVesselTrack } from "@/lib/vessel-direction";
+import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
 
-export type MappedVessel = {
-  vessel: FleetVessel;
-  position: VesselPosition;
-};
+export type MappedVessel = { vessel: FleetVessel; position: VesselPosition };
 
 function receivedLabel(receivedAt: string) {
   return new Intl.DateTimeFormat("en", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "UTC",
-    timeZoneName: "short",
+    day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+    timeZone: "UTC", timeZoneName: "short",
   }).format(new Date(receivedAt));
 }
 
-export function FleetMap({ vessels }: { vessels: MappedVessel[] }) {
+function markerHtml(name: string, color: string, course: number | null, replay = false) {
+  return `<span class="fleet-marker" style="--marker-color:${color}; --marker-course:${course ?? 0}deg" aria-label="${name} vessel marker">
+    <svg viewBox="0 0 40 56" role="img" aria-hidden="true"><path class="fleet-marker-shadow" d="M20 2 36 50 20 42 4 50 20 2Z"/><path class="fleet-marker-hull" d="M20 4 33 46 20 39 7 46 20 4Z"/></svg>
+  </span><strong>${name}${replay ? " · REPLAY" : ""}</strong>`;
+}
+
+export function FleetMap({
+  vessels,
+  legs = [],
+  tracks = [],
+  pinnedLegId,
+  replayAt,
+}: {
+  vessels: MappedVessel[];
+  legs?: ImportantLeg[];
+  tracks?: LegTrack[];
+  pinnedLegId?: string | null;
+  replayAt?: string;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
+  const markerRefs = useRef(new Map<string, LeafletMarker>());
 
   useEffect(() => {
     let active = true;
     let removeMap: (() => void) | undefined;
-
     void import("leaflet").then((leaflet) => {
       if (!active || !containerRef.current) return;
-
-      const map = leaflet.map(containerRef.current, {
-        zoomControl: true,
-        scrollWheelZoom: false,
-      });
+      const map = leaflet.map(containerRef.current, { zoomControl: true, scrollWheelZoom: false });
+      mapRef.current = map;
+      markerRefs.current.clear();
       removeMap = () => map.remove();
-
       leaflet.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom: 19,
       }).addTo(map);
+      const bounds = leaflet.latLngBounds([]);
 
-      if (!vessels.length) {
-        map.setView([37.8, 23.9], 9);
-        return;
+      for (const leg of legs) {
+        const pinned = leg.id === pinnedLegId;
+        const route: [number, number][] = [[leg.start.lat, leg.start.lng], [leg.end.lat, leg.end.lng]];
+        route.forEach((point) => bounds.extend(point));
+        leaflet.polyline(route, { color: pinned ? "#009bc4" : "#071a2b", weight: pinned ? 4 : 2, dashArray: pinned ? undefined : "3 8", opacity: pinned ? 1 : 0.55 }).addTo(map);
+        leaflet.circleMarker(route[0], { radius: 7, color: "#071a2b", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · START`);
+        leaflet.circleMarker(route[1], { radius: 7, color: "#009bc4", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · FINISH`);
       }
 
-      const bounds = leaflet.latLngBounds([]);
+      for (const track of tracks) {
+        for (let index = 1; index < track.points.length; index += 1) {
+          const previous = track.points[index - 1];
+          const current = track.points[index];
+          const inLeg = Boolean(previous.legId && previous.legId === current.legId);
+          const segment: [number, number][] = [[previous.lat, previous.lng], [current.lat, current.lng]];
+          segment.forEach((point) => bounds.extend(point));
+          leaflet.polyline(segment, {
+            color: track.color,
+            weight: inLeg ? 4 : 2,
+            opacity: inLeg ? 0.92 : 0.45,
+            dashArray: inLeg ? undefined : "4 8",
+          }).addTo(map);
+        }
+      }
+
       for (const { vessel, position } of vessels) {
-        const coordinates: [number, number] = [position.lat, position.lng];
-        const track = getVesselTrack(position);
-        const previousCoordinates: [number, number] = [track.previous.lat, track.previous.lng];
-        bounds.extend(coordinates);
-        bounds.extend(previousCoordinates);
-
-        leaflet.polyline([previousCoordinates, coordinates], {
-          color: vessel.color,
-          weight: 3,
-          opacity: 0.75,
-          dashArray: track.mocked ? "6 7" : undefined,
-        }).addTo(map);
-
-        const arrowSize = 0.0035;
-        const arrowRadians = (track.bearing * Math.PI) / 180;
-        const arrowBase = [
-          track.current.lat - arrowSize * Math.cos(arrowRadians),
-          track.current.lng - (arrowSize * Math.sin(arrowRadians)) / Math.max(Math.cos((track.current.lat * Math.PI) / 180), 0.2),
-        ] as [number, number];
-        const arrowWing = arrowSize * 0.7;
-        const arrowLeft = [
-          arrowBase[0] + arrowWing * Math.cos(arrowRadians - Math.PI / 2),
-          arrowBase[1] + (arrowWing * Math.sin(arrowRadians - Math.PI / 2)) / Math.max(Math.cos((track.current.lat * Math.PI) / 180), 0.2),
-        ] as [number, number];
-        const arrowRight = [
-          arrowBase[0] + arrowWing * Math.cos(arrowRadians + Math.PI / 2),
-          arrowBase[1] + (arrowWing * Math.sin(arrowRadians + Math.PI / 2)) / Math.max(Math.cos((track.current.lat * Math.PI) / 180), 0.2),
-        ] as [number, number];
-        leaflet.polygon([coordinates, arrowLeft, arrowRight], {
-          color: vessel.color,
-          fillColor: vessel.color,
-          fillOpacity: 0.9,
-          weight: 0,
-        }).addTo(map);
-
+        const replayTrack = tracks.find((track) => track.mmsi === vessel.mmsi);
+        const racePoints = pinnedLegId ? replayTrack?.points.filter((candidate) => candidate.legId === pinnedLegId) ?? [] : [];
+        const eligiblePoints = replayAt ? racePoints.filter((candidate) => Date.parse(candidate.receivedAt) <= Date.parse(replayAt)) : racePoints;
+        const isReplay = Boolean(pinnedLegId && replayAt && racePoints.length);
+        const point = isReplay ? eligiblePoints[eligiblePoints.length - 1] ?? racePoints[0] : null;
+        const lat = point?.lat ?? position.lat;
+        const lng = point?.lng ?? position.lng;
+        bounds.extend([lat, lng]);
         const icon = leaflet.divIcon({
           className: "fleet-marker-wrap",
-          html: `<span class="fleet-marker" style="--marker-color:${vessel.color}; --marker-course:${track.bearing}deg" aria-label="${vessel.name} vessel marker">
-            <svg viewBox="0 0 40 56" role="img" aria-hidden="true" focusable="false">
-              <path class="fleet-marker-shadow" d="M20 2 37 51 20 43 3 51 20 2Z" />
-              <path class="fleet-marker-hull" d="M20 3 35 49 20 41 5 49 20 3Z" />
-            </svg>
-          </span><strong>${vessel.name}</strong>`,
+          html: markerHtml(vessel.name, vessel.color, point?.course ?? position.course, isReplay),
           iconAnchor: [20, 28],
         });
-        leaflet.marker(coordinates, { icon })
-          .addTo(map)
-          .bindPopup(
-            `<b>${vessel.name}</b><br>${position.lat.toFixed(5)}° N, ${position.lng.toFixed(5)}° E<br>` +
-              `Direction ${Math.round(track.bearing)}°${track.mocked ? " · estimated from saved course" : ""}<br>` +
-              `Received ${receivedLabel(position.receivedAt)}${position.stale ? " · stale" : ""}`,
-          );
+        const marker = leaflet.marker([lat, lng], { icon }).addTo(map).bindPopup(
+          `<b>${vessel.name}</b><br>${lat.toFixed(5)}° N, ${lng.toFixed(5)}° E<br>Received ${receivedLabel(point?.receivedAt ?? position.receivedAt)}`,
+        );
+        markerRefs.current.set(vessel.mmsi, marker);
       }
-      map.fitBounds(bounds.pad(0.28), { maxZoom: 13 });
+      if (bounds.isValid()) map.fitBounds(bounds.pad(0.16), { maxZoom: 13 });
+      else map.setView([37.54, 24.16], 10);
     });
-
     return () => {
       active = false;
+      markerRefs.current.clear();
+      mapRef.current = null;
       removeMap?.();
     };
-  }, [vessels]);
+  }, [legs, pinnedLegId, tracks, vessels]);
+
+  useEffect(() => {
+    if (!pinnedLegId || !replayAt || !mapRef.current) return;
+    for (const track of tracks) {
+      const racePoints = track.points.filter((point) => point.legId === pinnedLegId);
+      const eligible = racePoints.filter((point) => Date.parse(point.receivedAt) <= Date.parse(replayAt));
+      const point = eligible[eligible.length - 1] ?? racePoints[0];
+      const marker = markerRefs.current.get(track.mmsi);
+      if (point && marker) marker.setLatLng([point.lat, point.lng]);
+    }
+  }, [pinnedLegId, replayAt, tracks]);
 
   return (
     <div className="fleet-map-shell">
-      <div ref={containerRef} className="fleet-map" aria-label="Map of the fleet's last known positions" />
+      <div ref={containerRef} className="fleet-map" aria-label="Prima Regatina route and recorded fleet tracks" />
       <div className="fleet-map-legend">
-        {vessels.length ? vessels.map(({ vessel, position }) => (
-          <div key={vessel.mmsi}>
-            <i style={{ background: vessel.color }} />
-            <span>{vessel.name}</span>
-            <time dateTime={position.receivedAt}>{receivedLabel(position.receivedAt)}</time>
-          </div>
-        )) : <span>Loading saved vessel positions…</span>}
+        {tracks.map((track) => <div key={track.mmsi}><i style={{ background: track.color }} /><span>{track.name}</span><time>{track.points.length} reports</time></div>)}
+        <div className="track-key"><i /><span>Dashed</span><time>outside leg</time></div>
+        <div className="track-key solid"><i /><span>Solid</span><time>in regatta</time></div>
       </div>
     </div>
   );

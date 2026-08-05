@@ -22,8 +22,19 @@ the race application, and Telegram user access.
 - Vessel endpoint: `GET https://first-mythos-cup.vercel.app/api/vessels/{mmsi}`
 - Source: `https://github.com/carlo088/first-mythos-cup`
 
-The application endpoint is the default source for positions. It currently
-serves the saved mock snapshot and makes zero paid provider requests.
+The application endpoint is the default source for positions. It reads the
+latest normalized row from Supabase; the current rows are simulated and make
+zero paid provider requests. Never add a frontend-only mock path.
+
+## Legs, replay, and scoring
+
+- `race_legs` stores route, UTC start/end, corridor, and scheduled/active/finished status.
+- `vessel_positions.leg_id` is assigned automatically by the database trigger from time and route corridor.
+- `leg_scores` stores per-boat points for one finished race; its trigger recomputes `vessel_scores`, which powers the aggregate leaderboard.
+- `GET /api/legs/important` returns all legs, simulation tracks, results, and scores.
+- The map always shows all routes/tracks. One pinned race may drive the shared three-boat replay clock.
+
+Read `references/operations.md` before creating, editing, or deleting legs.
 
 ## Persistent development environment
 

@@ -108,6 +108,41 @@ backup or reversible migration. Never put the database password in commands,
 commits, Telegram messages, or logs. Use the scoped Supabase access token only
 when it is configured.
 
+### Race legs
+
+Legs live in `public.race_legs`. Always store start/end coordinates, UTC
+`starts_at`/`ends_at`, corridor metres, and status. Position inserts must go to
+`public.vessel_positions`; the database trigger assigns `leg_id` when time and
+route corridor match. Frontends read Supabase through internal APIs and must
+not receive a separate mock or provider path. Deleting a leg sets historical
+position `leg_id` values to null and cascades that leg's scores; the UI tolerates
+missing data, but deletion still requires owner confirmation.
+
+Finished-race points live in `public.leg_scores`. Write one validated integer
+0–100 per leg/MMSI. Its trigger recalculates aggregate `public.vessel_scores`.
+Do not edit aggregate totals independently.
+
+### Vessel ingestion scheduler
+
+`/opt/hermes/bin/first-mythos-cup-vessel-worker` runs as a separate Node child
+beside the Hermes gateway on the same Fly VM. It does not use model context.
+It checks once per minute but contacts providers only when due:
+
+- Greece 22:00–08:00: disabled.
+- Greece daytime outside a stored active time window: hourly.
+- During a stored race time window: every five minutes.
+
+One cycle requests all three MMSIs and writes normalized rows to
+`vessel_positions`. MyShipTracking costs one credit per vessel, so the maximum
+ordinary-day budget is 42 credits and each regatta hour adds 36 credits.
+`VESSEL_DATA_MODE=mock` is the hard cost gate and is currently active; the
+worker process stays alive but makes no provider calls. Never switch Fly to
+`VESSEL_DATA_MODE=live` without explicit owner authorization acknowledging this
+budget and confirming the provider and Supabase secrets are present. After a
+mode change, verify the process and one aggregate cycle from logs without
+printing coordinates or credentials. To stop spending immediately, restore
+mock mode and restart the machine.
+
 ## Credential boundaries
 
 - `GITHUB_TOKEN`: fine-grained access to this repository only; contents and

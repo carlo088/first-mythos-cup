@@ -36,7 +36,7 @@ export interface VesselPosition {
   providerTimestamp: string;
   ageSeconds: number;
   stale: boolean;
-  provider: "myshiptracking" | "mock";
+  provider: "myshiptracking" | "mock" | "supabase";
   /** Optional history point; mock mode derives one from course until this is populated. */
   previousPosition?: { lat: number; lng: number };
 }

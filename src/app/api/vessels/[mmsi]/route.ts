@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
-import {
-  getVesselPosition,
-  VesselProviderError,
-} from "@/lib/myshiptracking";
-import { getMockVesselPosition } from "@/lib/mock-vessels";
+import { VesselProviderError } from "@/lib/myshiptracking";
+import { storedRowToPosition, supabaseSelect, type StoredPositionRow } from "@/lib/supabase-rest";
 import { isKnownMmsi } from "@/lib/vessels";
 
 export const runtime = "nodejs";
@@ -22,19 +19,16 @@ export async function GET(
   }
 
   try {
-    const useLiveProvider = process.env.VESSEL_DATA_MODE === "live";
-    const position = useLiveProvider
-      ? await getVesselPosition(mmsi)
-      : getMockVesselPosition(mmsi);
-
-    if (!position) {
-      return NextResponse.json({ error: "Mock position unavailable." }, { status: 404 });
-    }
+    const rows = await supabaseSelect<StoredPositionRow[]>(
+      `vessel_positions?mmsi=eq.${mmsi}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.desc&limit=1`,
+    );
+    if (!rows[0]) return NextResponse.json({ error: "Position unavailable." }, { status: 404 });
+    const position = storedRowToPosition(rows[0]);
     return NextResponse.json(
       { data: position },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          "Cache-Control": "no-store",
         },
       },
     );

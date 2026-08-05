@@ -12,7 +12,7 @@ This repository is shared by Codex and the Hermes agent. Read this file, `.agent
 
 ## Vessel data providers and costs
 
-- Active mode now: **saved mock snapshot** from `data/vessel-snapshot.json`; it makes zero provider calls.
+- Active mode now: **Supabase simulation history**; it makes zero provider calls. The frontend reads our server APIs, which read Supabase—never a local mock-only path.
 - MyShipTracking Vessel API v2 remains the preferred future live provider, documented in `docs/VESSEL_API.md`. It may only run when `VESSEL_DATA_MODE=live` is explicitly configured.
 - Each MyShipTracking simple request costs **1 credit**. Monitor credit use, retain server caching, avoid accidental polling, and report any change that can materially increase calls before shipping it.
 - A replacement MyShipTracking API key requires a new account at <https://www.myshiptracking.com/user/account/api>. Once the user provides the key, replace `MYSHIPTRACKING_API_KEY` in `.env.local` and in the hosting provider's server-side environment; never commit it.

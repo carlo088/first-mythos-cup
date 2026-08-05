@@ -256,16 +256,19 @@ export function main() {
     if (clone.status !== 0) console.error("Repository bootstrap failed; Hermes will retry on its next restart.");
   }
   const child = spawn("hermes", ["gateway", "run"], { stdio: "inherit" });
+  const vesselWorker = spawn("node", ["/opt/hermes/bin/first-mythos-cup-vessel-worker"], { stdio: "inherit", env: process.env });
   for (const signal of ["SIGINT", "SIGTERM"]) {
-    process.on(signal, () => child.kill(signal));
+    process.on(signal, () => { child.kill(signal); vesselWorker.kill(signal); });
   }
   child.on("error", (error) => {
     console.error(`Unable to start Hermes gateway: ${error.message}`);
     process.exitCode = 1;
   });
   child.on("exit", (code, signal) => {
+    vesselWorker.kill("SIGTERM");
     process.exitCode = code ?? (signal ? 1 : 0);
   });
+  vesselWorker.on("error", (error) => console.error(`Unable to start vessel worker: ${error.message}`));
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

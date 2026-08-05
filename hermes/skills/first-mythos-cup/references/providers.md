@@ -5,7 +5,8 @@
 `GET https://first-mythos-cup.vercel.app/api/vessels/{mmsi}`
 
 This is the default position source. It serves saved coordinates while
-`VESSEL_DATA_MODE=mock` and makes no provider calls.
+`VESSEL_DATA_MODE=mock` and makes no provider calls. The application reads the
+current simulated history from Supabase; it does not serve a local snapshot.
 
 ## MyShipTracking Vessel API v2
 
