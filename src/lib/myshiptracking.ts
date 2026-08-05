@@ -37,6 +37,8 @@ export interface VesselPosition {
   ageSeconds: number;
   stale: boolean;
   provider: "myshiptracking" | "mock";
+  /** Optional history point; mock mode derives one from course until this is populated. */
+  previousPosition?: { lat: number; lng: number };
 }
 
 export class VesselProviderError extends Error {
