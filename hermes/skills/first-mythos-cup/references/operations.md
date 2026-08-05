@@ -58,6 +58,28 @@ After a push, use Vercel CLI with the protected token and the configured
 deployment and its logs. Confirm both the dashboard and the saved-snapshot API.
 Never enable paid AIS calls merely to validate a deployment.
 
+## Model TPM discipline
+
+Every model/tool iteration sends the system prompt, tool schemas, and retained
+conversation back to the provider. Prompt caching lowers cost but does not make
+those repeated requests free of rate-limit pressure. Keep the number and size of
+model round-trips low:
+
+- Issue independent read-only tool calls together in one assistant turn.
+- Do not repeat an unchanged status, authentication, or deployment inspection.
+- Use this project runbook for ordinary GitHub and Vercel work. Load an
+  additional generic skill only when it contains instructions this runbook does
+  not cover.
+- Request narrow file ranges and bounded logs; do not return whole build logs,
+  lockfiles, generated output, or dependency trees to the model.
+- Prefer `npm run verify` once over separate install, test, typecheck, and build
+  loops. Do not run `npm ci` when dependencies are already present and unchanged.
+- If a credential or permission check fails twice with the same result, stop
+  retrying it and report the exact missing capability to the owner.
+
+The gateway has a pre-request pacer and deterministic old-tool-result pruning.
+Do not remove or weaken either control merely to make a task finish faster.
+
 ## Fly self-deployment
 
 `flyctl` and its app-scoped token are available for inspecting this app.

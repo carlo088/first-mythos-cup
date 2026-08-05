@@ -16,9 +16,12 @@ compression:
   enabled: true
   threshold: 0.05
   target_ratio: 0.20
-  protect_last_n: 20
+  protect_last_n: 12
   protect_first_n: 0
   hygiene_hard_message_limit: 100
+  proactive_prune_tokens: 32000
+  proactive_prune_min_result_chars: 8000
+  proactive_prune_min_reclaim_tokens: 4096
 
 gateway:
   busy_input_mode: "queue"

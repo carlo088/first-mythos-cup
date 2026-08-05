@@ -96,11 +96,32 @@ export function renderRuntimeDefaults(config) {
     return `${source.slice(0, sectionStart)}\n  ${key}: ${value}${source.slice(sectionStart)}`;
   };
 
+  const setMappingEntry = (source, sectionName, key, value) => {
+    const sectionMatch = source.match(new RegExp(`^${sectionName}:\\s*(?:#.*)?$`, "m"));
+    if (!sectionMatch) return ensureMappingEntry(source, sectionName, key, value);
+
+    const sectionStart = (sectionMatch.index ?? 0) + sectionMatch[0].length;
+    const remainder = source.slice(sectionStart);
+    const nextSection = remainder.search(/^\\S/m);
+    const sectionEnd = nextSection === -1 ? source.length : sectionStart + nextSection;
+    const section = source.slice(sectionStart, sectionEnd);
+    const entryPattern = new RegExp(`^(\\s+)${key}:\\s*.*$`, "m");
+    if (!entryPattern.test(section)) return ensureMappingEntry(source, sectionName, key, value);
+
+    const updatedSection = section.replace(entryPattern, `$1${key}: ${value}`);
+    return `${source.slice(0, sectionStart)}${updatedSection}${source.slice(sectionEnd)}`;
+  };
+
   updated = ensureMappingEntry(updated, "agent", "api_max_retries", "2");
 
   if (!/^compression:\s*(?:#.*)?$/m.test(updated)) {
-    updated = `${updated.trimEnd()}\n\ncompression:\n  enabled: true\n  threshold: 0.05\n  target_ratio: 0.20\n  protect_last_n: 20\n  protect_first_n: 0\n  hygiene_hard_message_limit: 100\n`;
+    updated = `${updated.trimEnd()}\n\ncompression:\n  enabled: true\n  threshold: 0.05\n  target_ratio: 0.20\n  protect_last_n: 12\n  protect_first_n: 0\n  hygiene_hard_message_limit: 100\n  proactive_prune_tokens: 32000\n  proactive_prune_min_result_chars: 8000\n  proactive_prune_min_reclaim_tokens: 4096\n`;
   }
+
+  updated = ensureMappingEntry(updated, "compression", "proactive_prune_tokens", "32000");
+  updated = ensureMappingEntry(updated, "compression", "proactive_prune_min_result_chars", "8000");
+  updated = ensureMappingEntry(updated, "compression", "proactive_prune_min_reclaim_tokens", "4096");
+  updated = setMappingEntry(updated, "compression", "protect_last_n", "12");
 
   if (!/^hooks_auto_accept:\s*/m.test(updated)) {
     updated = `${updated.trimEnd()}\n\nhooks_auto_accept: true\n`;
