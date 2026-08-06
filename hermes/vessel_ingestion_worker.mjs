@@ -46,10 +46,14 @@ async function fetchVessel(mmsi, environment) {
   return body.data;
 }
 
+export function positionInsertQuery(positions, capturedAt) {
+  const values = positions.map((position) => `(${sqlLiteral(String(position.mmsi))}, ${position.lat}, ${position.lng}, ${position.course === 511 ? "null" : position.course}, ${position.speed}, ${position.nav_status}, ${sqlLiteral(position.received)}, ${sqlLiteral(capturedAt)}, 'myshiptracking', null)`).join(",\n");
+  return `insert into public.vessel_positions (mmsi, latitude, longitude, course, speed_knots, navigation_status, received_at, captured_at, source, leg_id) values ${values};`;
+}
+
 async function storePositions(positions, environment) {
   const capturedAt = new Date().toISOString();
-  const values = positions.map((position) => `(${sqlLiteral(String(position.mmsi))}, ${position.lat}, ${position.lng}, ${position.course === 511 ? "null" : position.course}, ${position.speed}, ${position.nav_status}, ${sqlLiteral(position.received)}, ${sqlLiteral(capturedAt)}, 'myshiptracking', null)`).join(",\n");
-  const query = `insert into public.vessel_positions (mmsi, latitude, longitude, course, speed_knots, navigation_status, received_at, captured_at, source, leg_id) values ${values} on conflict (mmsi, received_at) do update set latitude=excluded.latitude, longitude=excluded.longitude, course=excluded.course, speed_knots=excluded.speed_knots, navigation_status=excluded.navigation_status, captured_at=excluded.captured_at, source=excluded.source;`;
+  const query = positionInsertQuery(positions, capturedAt);
   const response = await fetch(`https://api.supabase.com/v1/projects/${environment.SUPABASE_PROJECT_REF}/database/query`, {
     method: "POST", headers: { Authorization: `Bearer ${environment.SUPABASE_ACCESS_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ query }),
   });
