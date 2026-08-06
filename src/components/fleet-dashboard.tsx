@@ -53,18 +53,18 @@ const NAV_STATUS: Record<Language, Record<number, string>> = {
 
 const COPY = {
   en: {
-    map: "Map", reload: "Reload snapshot", loading: "Loading…", history: "SUPABASE POSITION HISTORY · ZERO PAID AIS CALLS · ACCELERATED 30-MINUTE TEST",
+    map: "Map", reload: "Refresh live data", loading: "Loading…", history: "LIVE AIS TELEMETRY · LAST-KNOWN POSITIONS · RECEIVED TIME SHOWN",
     sharedTracker: "SHARED TRACKER", pinRace: "Pin a regata to replay", noRace: "No regata pinned", unpinRace: "Unpin active regata", raceClock: "Shared race clock",
     races: "Regate", status: "Status", race: "Regata", startEnd: "Start / End", arrivalOrder: "Arrival order", points: "Points", live: "Live", ended: "Ended", progress: "In progress", pin: "Pin", unpin: "Unpin",
     leaderboard: "Leaderboard", loadingPoints: "Loading points…", pointsUnavailable: "Points unavailable right now.", rank: "Rank", vessel: "Vessel", lastReport: "Last report", totalPoints: "Total points", staleAis: "Stale AIS", aisReceived: "AIS received", reportUnavailable: "Report unavailable",
-    reports: "VESSEL REPORTS", telemetry: "Last-known telemetry", checked: "Dashboard checked at", supabaseTrack: "Supabase track", staleReport: "Stale report", speed: "Speed", course: "Course", vesselStatus: "Status", lastPosition: "Last position", unavailable: "Position unavailable", ais: "AIS",
+    reports: "VESSEL REPORTS", telemetry: "Last-known telemetry", checked: "Dashboard checked at", supabaseTrack: "AIS history", staleReport: "Stale report", speed: "Speed", course: "Course", vesselStatus: "Status", lastPosition: "Last position", unavailable: "Position unavailable", ais: "AIS",
   },
   it: {
-    map: "Mappa", reload: "Ricarica dati", loading: "Caricamento…", history: "STORICO POSIZIONI SUPABASE · NESSUNA CHIAMATA AIS A PAGAMENTO · TEST ACCELERATO DI 30 MINUTI",
+    map: "Mappa", reload: "Aggiorna dati live", loading: "Caricamento…", history: "TELEMETRIA AIS LIVE · ULTIME POSIZIONI NOTE · ORARIO DI RICEZIONE VISIBILE",
     sharedTracker: "TRACCIATORE CONDIVISO", pinRace: "Seleziona una regata", noRace: "Nessuna regata selezionata", unpinRace: "Rimuovi selezione", raceClock: "Cronometro condiviso",
     races: "Regate", status: "Stato", race: "Regata", startEnd: "Inizio / Fine", arrivalOrder: "Ordine d'arrivo", points: "Punti", live: "In corso", ended: "Conclusa", progress: "In corso", pin: "Seleziona", unpin: "Rimuovi",
     leaderboard: "Classifica", loadingPoints: "Caricamento punti…", pointsUnavailable: "Punti non disponibili al momento.", rank: "Pos.", vessel: "Barca", lastReport: "Ultimo rapporto", totalPoints: "Punti totali", staleAis: "AIS non aggiornato", aisReceived: "AIS ricevuto", reportUnavailable: "Rapporto non disponibile",
-    reports: "RAPPORTI BARCHE", telemetry: "Ultima telemetria disponibile", checked: "Pannello aggiornato alle", supabaseTrack: "Traccia Supabase", staleReport: "Rapporto non aggiornato", speed: "Velocità", course: "Rotta", vesselStatus: "Stato", lastPosition: "Ultima posizione", unavailable: "Posizione non disponibile", ais: "AIS",
+    reports: "RAPPORTI BARCHE", telemetry: "Ultima telemetria disponibile", checked: "Pannello aggiornato alle", supabaseTrack: "Storico AIS", staleReport: "Rapporto non aggiornato", speed: "Velocità", course: "Rotta", vesselStatus: "Stato", lastPosition: "Ultima posizione", unavailable: "Posizione non disponibile", ais: "AIS",
   },
 } as const;
 
