@@ -19,8 +19,9 @@ export async function GET(
   }
 
   try {
+    const sourceFilter = process.env.VESSEL_DATA_MODE === "live" ? "&source=eq.myshiptracking" : "";
     const rows = await supabaseSelect<StoredPositionRow[]>(
-      `vessel_positions?mmsi=eq.${mmsi}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.desc&limit=1`,
+      `vessel_positions?mmsi=eq.${mmsi}${sourceFilter}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.desc&limit=1`,
     );
     if (!rows[0]) return NextResponse.json({ error: "Position unavailable." }, { status: 404 });
     const position = storedRowToPosition(rows[0]);
