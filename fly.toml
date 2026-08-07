@@ -7,7 +7,7 @@ primary_region = "fra"
 [env]
   HERMES_MODEL = "gpt-5.6-luna"
   HERMES_INFERENCE_MODEL = "gpt-5.6-luna"
-  VESSEL_DATA_MODE = "mock"
+  VESSEL_DATA_MODE = "live"
   APP_URL = "https://first-mythos-cup.vercel.app"
 
 [processes]

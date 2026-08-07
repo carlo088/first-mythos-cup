@@ -24,15 +24,20 @@ This file contains identifiers and status only. Secret values live exclusively i
 
 ## Vessel APIs
 
-- Supabase simulation history: active; zero vendor calls.
-- MyShipTracking: integration retained but disabled unless `VESSEL_DATA_MODE=live` is explicitly set.
+- MyShipTracking: active production provider; the worker writes normalized
+  reports to Supabase and the app serves the latest stored report per vessel.
+  A vessel's last-known report remains valid when its provider `received` time
+  is old; the API marks that record stale rather than replacing it with
+  simulation data.
 - AISstream: credentials retained in `.env.local`, service currently considered down.
 - Global Fishing Watch: identity/registry fallback only; token is not yet configured.
 
 ## Agent runtime
 
 - Hermes runtime: official `nousresearch/hermes-agent:latest` image on Fly, customized under `hermes/`.
-- Vessel scheduler: a separate lightweight Node child process in the same Fly machine; disabled in mock mode.
+- Vessel scheduler: a separate lightweight Node child process in the same Fly
+  machine; live mode is enabled and its writes feed the same API used by the
+  mobile app.
 - Persistent state: Fly volume `/opt/data`; credentials are protected in `/opt/data/.env` and mirrored from Fly secrets without logging values.
 - Fly receives the complete server environment required for autonomous
   operation, including Supabase management and database access. Provider keys

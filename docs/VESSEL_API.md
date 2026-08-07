@@ -60,7 +60,12 @@ Important fields:
 
 Only known fleet MMSIs are accepted. The response is normalized for the UI, includes `course: null` when the upstream reports `511`, and includes `stale` and `ageSeconds` fields.
 
-The application currently runs with `VESSEL_DATA_MODE=mock`; its APIs read simulated position history from Supabase, making zero MyShipTracking calls. Live ingestion requires an explicit `VESSEL_DATA_MODE=live` setting on Fly; the scheduled worker then writes normalized provider reports to the same `vessel_positions` table that every frontend already reads.
+The application runs with `VESSEL_DATA_MODE=live`; the scheduled worker writes
+normalized MyShipTracking reports to the same `vessel_positions` table that
+every frontend reads. If a vessel stops transmitting, the API continues to
+serve its last-known provider report and sets `stale` from the age of its
+`received` timestamp; it does not substitute simulation data or invent a newer
+AIS timestamp.
 
 ## Identity fallback
 
