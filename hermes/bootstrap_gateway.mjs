@@ -156,7 +156,7 @@ export function renderRuntimeDefaults(config) {
   }
 
   if (!/^session_reset:\s*(?:#.*)?$/m.test(updated)) {
-    updated = `${updated.trimEnd()}\n\nsession_reset:\n  mode: idle\n  idle_minutes: 360\n`;
+    updated = `${updated.trimEnd()}\n\nsession_reset:\n  mode: idle\n  idle_minutes: 1440\n`;
   }
 
   const quickCommandsMatch = updated.match(/^quick_commands:\s*(?:#.*)?$/m);

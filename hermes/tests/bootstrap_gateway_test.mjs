@@ -55,11 +55,11 @@ test("rejects model values that are unsafe to place in YAML", () => {
   );
 });
 
-test("adds the six-hour idle reset and fresh command without replacing persistent settings", () => {
+test("adds the 24-hour idle reset and fresh command without replacing persistent settings", () => {
   const config = `model:\n  default: gpt-5.6-luna\nplatforms:\n  telegram:\n    enabled: true\n`;
   const updated = renderRuntimeDefaults(config);
 
-  assert.match(updated, /session_reset:\n  mode: idle\n  idle_minutes: 360/);
+  assert.match(updated, /session_reset:\n  mode: idle\n  idle_minutes: 1440/);
   assert.match(updated, /agent:\n  api_max_retries: 2/);
   assert.match(updated, /compression:\n  enabled: true\n  threshold: 0\.05/);
   assert.match(updated, /proactive_prune_tokens: 32000/);

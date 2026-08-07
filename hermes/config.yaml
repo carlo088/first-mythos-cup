@@ -29,7 +29,7 @@ gateway:
 
 session_reset:
   mode: "idle"
-  idle_minutes: 360
+  idle_minutes: 1440
 
 quick_commands:
   fresh:
