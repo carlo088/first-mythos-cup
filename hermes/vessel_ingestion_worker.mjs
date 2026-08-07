@@ -48,7 +48,7 @@ async function fetchVessel(mmsi, environment) {
 
 export function positionInsertQuery(positions, capturedAt) {
   const values = positions.map((position) => `(${sqlLiteral(String(position.mmsi))}, ${position.lat}, ${position.lng}, ${position.course === 511 ? "null" : position.course}, ${position.speed}, ${position.nav_status}, ${sqlLiteral(position.received)}, ${sqlLiteral(capturedAt)}, 'myshiptracking', null)`).join(",\n");
-  return `insert into public.vessel_positions (mmsi, latitude, longitude, course, speed_knots, navigation_status, received_at, captured_at, source, leg_id) values ${values};`;
+  return `insert into public.vessel_positions (mmsi, latitude, longitude, course, speed_knots, navigation_status, received_at, captured_at, source, leg_id) values ${values} on conflict (mmsi, received_at) do update set latitude=excluded.latitude, longitude=excluded.longitude, course=excluded.course, speed_knots=excluded.speed_knots, navigation_status=excluded.navigation_status, captured_at=excluded.captured_at, source=excluded.source;`;
 }
 
 async function storePositions(positions, environment) {
