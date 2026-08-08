@@ -22,7 +22,7 @@ type LeaderboardState =
 type LegState =
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "ready"; races: RaceArchiveEntry[]; tracks: LegTrack[] };
+  | { status: "ready"; races: RaceArchiveEntry[]; tracks: LegTrack[]; liveTracks: LegTrack[] };
 
 type RaceArchiveEntry = {
   leg: ImportantLeg;
@@ -163,7 +163,7 @@ export function FleetDashboard({ language }: { language: Language }) {
     }
     try {
       const response = await fetch("/api/legs/important", { cache: "no-store" });
-      const body = (await response.json()) as { data?: { races: RaceArchiveEntry[]; tracks: LegTrack[] }; error?: string };
+      const body = (await response.json()) as { data?: { races: RaceArchiveEntry[]; tracks: LegTrack[]; liveTracks: LegTrack[] }; error?: string };
       if (!response.ok || !body.data) throw new Error(body.error || "Leg unavailable");
       setLegState({ status: "ready", ...body.data });
       setPinnedLegId((current) => current && body.data!.races.some((race) => race.leg.id === current) ? current : null);
@@ -212,6 +212,7 @@ export function FleetDashboard({ language }: { language: Language }) {
         vessels={mappedVessels}
         legs={mappedLegs}
         tracks={legState.status === "ready" ? legState.tracks : []}
+        liveTracks={legState.status === "ready" ? legState.liveTracks : []}
         pinnedLegId={pinnedLegId}
         replayAt={replayAt}
         language={language}

@@ -26,13 +26,15 @@ function normalizeLeg(row: LegRow): ImportantLeg {
 
 export async function GET() {
   try {
-    const [legRows, rows, scoreRows] = await Promise.all([
+    const [legRows, rows, liveRows, scoreRows] = await Promise.all([
       supabaseSelect<LegRow[]>("race_legs?select=*&order=starts_at.asc"),
       supabaseSelect<StoredPositionRow[]>("vessel_positions?source=eq.important-leg-simulation&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.asc"),
+      supabaseSelect<StoredPositionRow[]>("vessel_positions?source=not.eq.important-leg-simulation&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.asc"),
       supabaseSelect<LegScoreRow[]>("leg_scores?select=leg_id,mmsi,points"),
     ]);
     const legs = legRows.map(normalizeLeg);
     const tracks = emptyTracks();
+    const liveTracks = emptyTracks();
     for (const position of rows) {
       const track = tracks.find((candidate) => candidate.mmsi === position.mmsi);
       if (!track) continue;
@@ -44,12 +46,22 @@ export async function GET() {
       };
       track.points.push(point);
     }
+    for (const position of liveRows) {
+      const track = liveTracks.find((candidate) => candidate.mmsi === position.mmsi);
+      if (!track) continue;
+      track.points.push({
+        id: position.id, mmsi: position.mmsi,
+        lat: position.latitude, lng: position.longitude,
+        course: position.course, speedKnots: position.speed_knots,
+        receivedAt: position.received_at, legId: null,
+      });
+    }
     const races = legs.map((leg) => ({
       leg,
       results: computeLegResults(leg, tracks),
       scores: scoreRows.filter((score) => score.leg_id === leg.id),
     }));
-    return NextResponse.json({ data: { races, tracks } });
+    return NextResponse.json({ data: { races, tracks, liveTracks } });
   } catch (error) {
     console.error("Unable to load race legs", error);
     return NextResponse.json({ error: "Unable to load race legs." }, { status: 503 });

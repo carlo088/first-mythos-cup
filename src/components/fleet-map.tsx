@@ -27,6 +27,7 @@ export function FleetMap({
   vessels,
   legs = [],
   tracks = [],
+  liveTracks = [],
   pinnedLegId,
   replayAt,
   language,
@@ -34,6 +35,7 @@ export function FleetMap({
   vessels: MappedVessel[];
   legs?: ImportantLeg[];
   tracks?: LegTrack[];
+  liveTracks?: LegTrack[];
   pinnedLegId?: string | null;
   replayAt?: string;
   language: Language;
@@ -81,6 +83,21 @@ export function FleetMap({
         }
       }
 
+      for (const track of liveTracks) {
+        for (let index = 1; index < track.points.length; index += 1) {
+          const previous = track.points[index - 1];
+          const current = track.points[index];
+          const segment: [number, number][] = [[previous.lat, previous.lng], [current.lat, current.lng]];
+          segment.forEach((point) => bounds.extend(point));
+          leaflet.polyline(segment, {
+            color: track.color,
+            weight: 2,
+            opacity: 0.72,
+            dashArray: "6 8",
+          }).addTo(map);
+        }
+      }
+
       for (const { vessel, position } of vessels) {
         const replayTrack = tracks.find((track) => track.mmsi === vessel.mmsi);
         const racePoints = pinnedLegId ? replayTrack?.points.filter((candidate) => candidate.legId === pinnedLegId) ?? [] : [];
@@ -112,7 +129,7 @@ export function FleetMap({
       mapRef.current = null;
       removeMap?.();
     };
-  }, [language, legs, pinnedLegId, tracks, vessels]);
+  }, [language, legs, liveTracks, pinnedLegId, tracks, vessels]);
 
   useEffect(() => {
     if (!pinnedLegId || !replayAt || !mapRef.current) return;
