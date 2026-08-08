@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { FleetDashboard, type Language } from "@/components/fleet-dashboard";
+import { Library } from "@/components/library";
 
 export default function Home() {
   const [language, setLanguage] = useState<Language>("en");
@@ -35,6 +36,7 @@ export default function Home() {
         </div>
       </header>
       <FleetDashboard language={language} />
+      <Library />
       <footer>
         <span>FIRST MYTHOS CUP / FIRST 36 FLEET</span>
         <p>{italian ? "Le posizioni sono gli ultimi rapporti AIS disponibili e possono essere ritardati. First 36 è un modello Beneteau." : "Positions are last-known AIS reports and may be delayed. First 36 is a Beneteau model reference."}</p>
