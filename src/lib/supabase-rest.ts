@@ -1,5 +1,8 @@
 import type { VesselPosition } from "@/lib/myshiptracking";
 import { fleetVessel } from "@/lib/vessels";
+import { selectLivePositionRow } from "./live-position-selection";
+
+export { selectLivePositionRow };
 
 export type StoredPositionRow = {
   id: number;
@@ -49,6 +52,6 @@ export function storedRowToPosition(row: StoredPositionRow, now = new Date()): V
     providerTimestamp: row.captured_at,
     ageSeconds,
     stale: ageSeconds > 15 * 60,
-    provider: "supabase",
+    provider: row.source === "manual-user" ? "manual" : "supabase",
   };
 }

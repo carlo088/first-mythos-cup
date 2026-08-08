@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { VesselProviderError } from "@/lib/myshiptracking";
-import { storedRowToPosition, supabaseSelect, type StoredPositionRow } from "@/lib/supabase-rest";
+import { storedRowToPosition, selectLivePositionRow, supabaseSelect, type StoredPositionRow } from "@/lib/supabase-rest";
 import { isKnownMmsi } from "@/lib/vessels";
 
 export const runtime = "nodejs";
@@ -19,12 +19,25 @@ export async function GET(
   }
 
   try {
-    const sourceFilter = process.env.VESSEL_DATA_MODE === "live" ? "&source=eq.myshiptracking" : "";
-    const rows = await supabaseSelect<StoredPositionRow[]>(
-      `vessel_positions?mmsi=eq.${mmsi}${sourceFilter}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=1`,
-    );
-    if (!rows[0]) return NextResponse.json({ error: "Position unavailable." }, { status: 404 });
-    const position = storedRowToPosition(rows[0]);
+    let row: StoredPositionRow | undefined;
+    if (process.env.VESSEL_DATA_MODE === "live") {
+      const providerRows = await supabaseSelect<StoredPositionRow[]>(
+        `vessel_positions?mmsi=eq.${mmsi}&source=eq.myshiptracking&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=1`,
+      );
+      const manualRows = mmsi === "247520340"
+        ? await supabaseSelect<StoredPositionRow[]>(
+          `vessel_positions?mmsi=eq.${mmsi}&source=eq.manual-user&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=1`,
+        )
+        : [];
+      row = selectLivePositionRow([...providerRows, ...manualRows]);
+    } else {
+      const rows = await supabaseSelect<StoredPositionRow[]>(
+        `vessel_positions?mmsi=eq.${mmsi}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=1`,
+      );
+      row = rows[0];
+    }
+    if (!row) return NextResponse.json({ error: "Position unavailable." }, { status: 404 });
+    const position = storedRowToPosition(row);
     return NextResponse.json(
       { data: position },
       {

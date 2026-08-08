@@ -57,14 +57,14 @@ const COPY = {
     sharedTracker: "SHARED TRACKER", pinRace: "Pin a regata to replay", noRace: "No regata pinned", unpinRace: "Unpin active regata", raceClock: "Shared race clock",
     races: "Regate", status: "Status", race: "Regata", startEnd: "Start / End", arrivalOrder: "Arrival order", points: "Points", live: "Live", ended: "Ended", progress: "In progress", pin: "Pin", unpin: "Unpin",
     leaderboard: "Leaderboard", loadingPoints: "Loading points…", pointsUnavailable: "Points unavailable right now.", rank: "Rank", vessel: "Vessel", lastReport: "Last report", totalPoints: "Total points", staleAis: "Stale AIS", aisReceived: "AIS received", reportUnavailable: "Report unavailable",
-    reports: "VESSEL REPORTS", telemetry: "Last-known telemetry", checked: "Dashboard checked at", supabaseTrack: "AIS history", staleReport: "Stale report", speed: "Speed", course: "Course", vesselStatus: "Status", lastPosition: "Last position", unavailable: "Position unavailable", ais: "AIS",
+    reports: "VESSEL REPORTS", telemetry: "Last-known telemetry", checked: "Dashboard checked at", supabaseTrack: "AIS history", manualPosition: "Manual position", staleReport: "Stale report", speed: "Speed", course: "Course", vesselStatus: "Status", lastPosition: "Last position", unavailable: "Position unavailable", ais: "AIS",
   },
   it: {
     map: "Mappa", reload: "Aggiorna dati live", loading: "Caricamento…", history: "TELEMETRIA AIS LIVE · ULTIME POSIZIONI NOTE · ORARIO DI RICEZIONE VISIBILE",
     sharedTracker: "TRACCIATORE CONDIVISO", pinRace: "Seleziona una regata", noRace: "Nessuna regata selezionata", unpinRace: "Rimuovi selezione", raceClock: "Cronometro condiviso",
     races: "Regate", status: "Stato", race: "Regata", startEnd: "Inizio / Fine", arrivalOrder: "Ordine d'arrivo", points: "Punti", live: "In corso", ended: "Conclusa", progress: "In corso", pin: "Seleziona", unpin: "Rimuovi",
     leaderboard: "Classifica", loadingPoints: "Caricamento punti…", pointsUnavailable: "Punti non disponibili al momento.", rank: "Pos.", vessel: "Barca", lastReport: "Ultimo rapporto", totalPoints: "Punti totali", staleAis: "AIS non aggiornato", aisReceived: "AIS ricevuto", reportUnavailable: "Rapporto non disponibile",
-    reports: "RAPPORTI BARCHE", telemetry: "Ultima telemetria disponibile", checked: "Pannello aggiornato alle", supabaseTrack: "Storico AIS", staleReport: "Rapporto non aggiornato", speed: "Velocità", course: "Rotta", vesselStatus: "Stato", lastPosition: "Ultima posizione", unavailable: "Posizione non disponibile", ais: "AIS",
+    reports: "RAPPORTI BARCHE", telemetry: "Ultima telemetria disponibile", checked: "Pannello aggiornato alle", supabaseTrack: "Storico AIS", manualPosition: "Posizione manuale", staleReport: "Rapporto non aggiornato", speed: "Velocità", course: "Rotta", vesselStatus: "Stato", lastPosition: "Ultima posizione", unavailable: "Posizione non disponibile", ais: "AIS",
   },
 } as const;
 
@@ -104,7 +104,7 @@ function VesselCard({ vessel, state, language }: { vessel: FleetVessel; state: V
       <div className="card-top">
         <span className="card-index" style={{ color: vessel.color }}>0{FLEET.indexOf(vessel) + 1}</span>
         <span className={`signal ${position.stale ? "stale" : ""}`}>
-          <i /> {position.provider === "supabase" ? copy.supabaseTrack : position.stale ? copy.staleReport : copy.aisReceived}
+          <i /> {position.provider === "manual" ? copy.manualPosition : position.provider === "supabase" ? copy.supabaseTrack : position.stale ? copy.staleReport : copy.aisReceived}
         </span>
       </div>
       <p className="model-label">Beneteau First 36</p>
