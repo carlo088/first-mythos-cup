@@ -91,9 +91,9 @@ export function FleetMap({
           segment.forEach((point) => bounds.extend(point));
           leaflet.polyline(segment, {
             color: track.color,
-            weight: 2,
-            opacity: 0.72,
-            dashArray: "6 8",
+            weight: 5,
+            opacity: 0.9,
+            dashArray: "10 9",
           }).addTo(map);
         }
       }

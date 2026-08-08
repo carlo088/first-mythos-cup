@@ -167,7 +167,7 @@ button:disabled { opacity: .55; cursor: wait; }
 .fleet-map-legend i { width: 7px; height: 7px; border-radius: 50%; }
 .fleet-map-legend span, .fleet-map-legend time { font: 500 9px "DM Mono", monospace; text-transform: uppercase; letter-spacing: .06em; }
 .fleet-map-legend time { color: #aabac5; text-align: right; }
-.fleet-map-legend .track-key i { width: 20px; height: 0; border-top: 2px dashed white; border-radius: 0; }
+.fleet-map-legend .track-key i { width: 20px; height: 0; border-top: 5px dashed white; border-radius: 0; }
 .fleet-map-legend .track-key.solid i { border-top-style: solid; }
 
 .replay-panel { display: grid; gap: 20px; margin: 26px 0 74px; padding: 28px; border: 1px solid var(--ink); background: rgba(255,255,255,.74); }
