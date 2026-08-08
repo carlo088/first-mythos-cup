@@ -143,8 +143,8 @@ button:disabled { opacity: .55; cursor: wait; }
 .fleet-map .leaflet-tile-pane { filter: saturate(.42) contrast(.92) brightness(1.05); }
 .fleet-map .leaflet-control-attribution { font: 400 8px "DM Mono", monospace; }
 .fleet-map .leaflet-popup-content { font: 500 10px/1.6 "DM Mono", monospace; }
-.fleet-marker-wrap { display: flex; align-items: center; gap: 9px; width: auto !important; }
-.fleet-marker-wrap strong { padding: 5px 7px; background: var(--deep); color: white; font: 700 9px Montserrat, sans-serif; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 2px 10px rgba(7,26,43,.18); }
+.fleet-marker-wrap { position: relative; display: block; width: 40px !important; height: 56px; }
+.fleet-marker-wrap strong { position: absolute; left: 49px; top: 15px; padding: 5px 7px; background: var(--deep); color: white; font: 700 9px Montserrat, sans-serif; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; box-shadow: 0 2px 10px rgba(7,26,43,.18); }
 .fleet-marker { flex: 0 0 auto; display: block; width: 40px; height: 56px; transform: rotate(var(--marker-course)); transform-origin: 50% 50%; filter: drop-shadow(0 3px 5px rgba(7,26,43,.3)); }
 .fleet-marker svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .fleet-marker-shadow { fill: white; stroke: var(--deep); stroke-width: 5; stroke-linejoin: round; }

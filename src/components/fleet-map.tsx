@@ -123,6 +123,7 @@ export function FleetMap({
           className: "fleet-marker-wrap",
           html: markerHtml(vessel.name, vessel.color, point?.course ?? direction, isReplay, language),
           iconAnchor: [20, 28],
+          iconSize: [40, 56],
         });
         const marker = leaflet.marker([lat, lng], { icon }).addTo(map).bindPopup(
           `<b>${vessel.name}</b><br>${lat.toFixed(5)}° N, ${lng.toFixed(5)}° E<br>${language === "it" ? "Ricevuto" : "Received"} ${receivedLabel(point?.receivedAt ?? position.receivedAt)}`,
