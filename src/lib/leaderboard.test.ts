@@ -3,7 +3,7 @@ import { sortLeaderboard, type LeaderboardEntry } from "./leaderboard";
 
 const entries: LeaderboardEntry[] = [
   { name: "Isera", mmsi: "247520340", color: "#ff7a45", totalPoints: 0 },
-  { name: "Fizzy", mmsi: "240576800", color: "#46d6bd", totalPoints: 12 },
+  { name: "Fizzy", mmsi: "240576800", color: "#168f73", totalPoints: 12 },
   { name: "Tiamat", mmsi: "240608700", color: "#73a7ff", totalPoints: 12 },
 ];
 

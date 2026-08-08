@@ -1,6 +1,6 @@
 export const FLEET = [
   { name: "Isera", mmsi: "247520340", color: "#ff7a45" },
-  { name: "Fizzy", mmsi: "240576800", color: "#46d6bd" },
+  { name: "Fizzy", mmsi: "240576800", color: "#168f73" },
   { name: "Tiamat", mmsi: "240608700", color: "#73a7ff" },
 ] as const;
 

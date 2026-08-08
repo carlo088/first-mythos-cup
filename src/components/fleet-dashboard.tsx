@@ -30,6 +30,8 @@ type RaceArchiveEntry = {
   scores: Array<{ leg_id: string; mmsi: string; points: number }>;
 };
 
+const AUTO_REFRESH_MS = 45 * 60 * 1000;
+
 const NAV_STATUS: Record<Language, Record<number, string>> = {
   en: {
   0: "Under way",
@@ -175,6 +177,10 @@ export function FleetDashboard({ language }: { language: Language }) {
   }, []);
 
   useEffect(() => { void loadFleet(); }, [loadFleet]);
+  useEffect(() => {
+    const timer = window.setInterval(() => { void loadFleet(); }, AUTO_REFRESH_MS);
+    return () => window.clearInterval(timer);
+  }, [loadFleet]);
 
   const mappedVessels = useMemo(() => FLEET.flatMap((vessel): MappedVessel[] => {
     const state = states[vessel.mmsi];
