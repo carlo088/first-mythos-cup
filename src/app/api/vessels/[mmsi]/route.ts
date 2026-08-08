@@ -20,9 +20,10 @@ export async function GET(
 
   try {
     let row: StoredPositionRow | undefined;
+    let providerRows: StoredPositionRow[] = [];
     if (process.env.VESSEL_DATA_MODE === "live") {
-      const providerRows = await supabaseSelect<StoredPositionRow[]>(
-        `vessel_positions?mmsi=eq.${mmsi}&source=eq.myshiptracking&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=1`,
+      providerRows = await supabaseSelect<StoredPositionRow[]>(
+        `vessel_positions?mmsi=eq.${mmsi}&source=eq.myshiptracking&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=2`,
       );
       const manualRows = mmsi === "247520340"
         ? await supabaseSelect<StoredPositionRow[]>(
@@ -38,6 +39,12 @@ export async function GET(
     }
     if (!row) return NextResponse.json({ error: "Position unavailable." }, { status: 404 });
     const position = storedRowToPosition(row);
+    if (row.source === "manual-user" && providerRows?.[0]) {
+      position.previousPosition = {
+        lat: providerRows[0].latitude,
+        lng: providerRows[0].longitude,
+      };
+    }
     return NextResponse.json(
       { data: position },
       {

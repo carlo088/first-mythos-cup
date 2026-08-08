@@ -5,6 +5,7 @@ import type { ImportantLeg, LegTrack } from "@/lib/important-leg";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import type { FleetVessel } from "@/lib/vessels";
 import type { Language } from "@/components/fleet-dashboard";
+import { getVesselTrack } from "@/lib/vessel-direction";
 import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
 
 export type MappedVessel = { vessel: FleetVessel; position: VesselPosition };
@@ -89,9 +90,12 @@ export function FleetMap({
         const lat = point?.lat ?? position.lat;
         const lng = point?.lng ?? position.lng;
         bounds.extend([lat, lng]);
+        const direction = point?.course !== null && point?.course !== undefined
+          ? point.course
+          : getVesselTrack(position).bearing;
         const icon = leaflet.divIcon({
           className: "fleet-marker-wrap",
-          html: markerHtml(vessel.name, vessel.color, point?.course ?? position.course, isReplay, language),
+          html: markerHtml(vessel.name, vessel.color, point?.course ?? direction, isReplay, language),
           iconAnchor: [20, 28],
         });
         const marker = leaflet.marker([lat, lng], { icon }).addTo(map).bindPopup(
