@@ -23,6 +23,10 @@ function markerHtml(name: string, color: string, course: number | null, replay =
   </span><strong>${name}${replay ? ` · ${language === "it" ? "RIPRODUZIONE" : "REPLAY"}` : ""}</strong>`;
 }
 
+function endpointFlagHtml(letter: "S" | "E", color: string, label: string) {
+  return `<span class="race-flag" style="--flag-color:${color}" aria-label="${label}"><span class="race-flag-pole"></span><span class="race-flag-cloth">${letter}</span></span>`;
+}
+
 export function FleetMap({
   vessels,
   legs = [],
@@ -60,15 +64,15 @@ export function FleetMap({
 
       for (const leg of legs) {
         const pinned = leg.id === pinnedLegId;
-        const route: [number, number][] = [[leg.start.lat, leg.start.lng], [leg.end.lat, leg.end.lng]];
+        const route: [number, number][] = [[leg.start.lat, leg.start.lng], ...leg.checkpoints.map((checkpoint) => [checkpoint.lat, checkpoint.lng] as [number, number]), [leg.end.lat, leg.end.lng]];
         route.forEach((point) => bounds.extend(point));
         leaflet.polyline(route, { color: pinned ? "#009bc4" : "#071a2b", weight: pinned ? 4 : 2, dashArray: pinned ? undefined : "3 8", opacity: pinned ? 1 : 0.55 }).addTo(map);
-        leaflet.circleMarker(route[0], { radius: 7, color: "#071a2b", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "PARTENZA" : "START"}`);
-        leaflet.circleMarker(route[1], { radius: 7, color: "#009bc4", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "ARRIVO" : "FINISH"}`);
-        for (const checkpoint of leg.checkpoints) {
-          const point: [number, number] = [checkpoint.lat, checkpoint.lng];
-          bounds.extend(point);
-          leaflet.circleMarker(point, { radius: 6, color: "#e08b32", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "CHECKPOINT" : "CHECKPOINT"}`);
+        const startLabel = language === "it" ? "PARTENZA" : "START";
+        const finishLabel = language === "it" ? "ARRIVO" : "FINISH";
+        leaflet.marker(route[0], { icon: leaflet.divIcon({ className: "race-flag-wrap", html: endpointFlagHtml("S", "#071a2b", startLabel), iconSize: [22, 28], iconAnchor: [4, 27] }) }).addTo(map).bindTooltip(`${leg.name} · ${startLabel}`);
+        leaflet.marker(route[route.length - 1], { icon: leaflet.divIcon({ className: "race-flag-wrap", html: endpointFlagHtml("E", "#009bc4", finishLabel), iconSize: [22, 28], iconAnchor: [4, 27] }) }).addTo(map).bindTooltip(`${leg.name} · ${finishLabel}`);
+        for (const point of route.slice(1, -1)) {
+          leaflet.circleMarker(point, { radius: 6, color: "#e08b32", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · CHECKPOINT`);
         }
       }
 
