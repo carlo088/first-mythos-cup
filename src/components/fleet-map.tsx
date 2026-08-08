@@ -11,9 +11,9 @@ import type { Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
 export type MappedVessel = { vessel: FleetVessel; position: VesselPosition };
 
 function receivedLabel(receivedAt: string) {
-  return new Intl.DateTimeFormat("en", {
+  return new Intl.DateTimeFormat("el-GR", {
     day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
-    timeZone: "UTC", timeZoneName: "short",
+    timeZone: "Europe/Athens", timeZoneName: "short",
   }).format(new Date(receivedAt));
 }
 
