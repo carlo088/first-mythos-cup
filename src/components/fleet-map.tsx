@@ -65,6 +65,11 @@ export function FleetMap({
         leaflet.polyline(route, { color: pinned ? "#009bc4" : "#071a2b", weight: pinned ? 4 : 2, dashArray: pinned ? undefined : "3 8", opacity: pinned ? 1 : 0.55 }).addTo(map);
         leaflet.circleMarker(route[0], { radius: 7, color: "#071a2b", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "PARTENZA" : "START"}`);
         leaflet.circleMarker(route[1], { radius: 7, color: "#009bc4", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "ARRIVO" : "FINISH"}`);
+        for (const checkpoint of leg.checkpoints) {
+          const point: [number, number] = [checkpoint.lat, checkpoint.lng];
+          bounds.extend(point);
+          leaflet.circleMarker(point, { radius: 6, color: "#e08b32", fillColor: "#f4f0e7", fillOpacity: 1, weight: 3 }).addTo(map).bindTooltip(`${leg.name} · ${language === "it" ? "CHECKPOINT" : "CHECKPOINT"}`);
+        }
       }
 
       for (const track of tracks) {

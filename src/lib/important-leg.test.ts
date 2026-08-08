@@ -14,6 +14,7 @@ const leg: ImportantLeg = {
   name: "Prima Regatina",
   start: PRIMA_REGATINA_ROUTE.start,
   end: PRIMA_REGATINA_ROUTE.end,
+  checkpoints: [],
   startsAt: "2026-08-05T18:00:00.000Z",
   endsAt: "2026-08-05T18:30:00.000Z",
   corridorMeters: 1800,

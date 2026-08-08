@@ -10,6 +10,7 @@ export type ImportantLeg = {
   name: string;
   start: Coordinate;
   end: Coordinate;
+  checkpoints: Coordinate[];
   startsAt: string;
   endsAt: string;
   corridorMeters: number;
