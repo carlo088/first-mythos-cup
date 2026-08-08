@@ -93,9 +93,10 @@ export function FleetMap({
       }
 
       for (const track of liveTracks) {
-        for (let index = 1; index < track.points.length; index += 1) {
-          const previous = track.points[index - 1];
-          const current = track.points[index];
+        const points = [...track.points].sort((a, b) => Date.parse(a.receivedAt) - Date.parse(b.receivedAt));
+        for (let index = 1; index < points.length; index += 1) {
+          const previous = points[index - 1];
+          const current = points[index];
           const segment: [number, number][] = [[previous.lat, previous.lng], [current.lat, current.lng]];
           segment.forEach((point) => bounds.extend(point));
           leaflet.polyline(segment, {
@@ -114,7 +115,8 @@ export function FleetMap({
         const eligiblePoints = replayAt ? racePoints.filter((candidate) => Date.parse(candidate.receivedAt) <= Date.parse(replayAt)) : racePoints;
         const isReplay = Boolean(pinnedLegId && replayAt && racePoints.length);
         const replayPoint = isReplay ? eligiblePoints[eligiblePoints.length - 1] ?? racePoints[0] : null;
-        const livePoint = liveTrack?.points[liveTrack.points.length - 1] ?? null;
+        const orderedLivePoints = [...(liveTrack?.points ?? [])].sort((a, b) => Date.parse(a.receivedAt) - Date.parse(b.receivedAt));
+        const livePoint = orderedLivePoints.at(-1) ?? null;
         const point = replayPoint ?? livePoint;
         const lat = point?.lat ?? position.lat;
         const lng = point?.lng ?? position.lng;
