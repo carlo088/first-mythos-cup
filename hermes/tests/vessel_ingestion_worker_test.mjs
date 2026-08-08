@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { ingestionCadence, positionInsertQuery, shouldIngest } from "../vessel_ingestion_worker.mjs";
+import { greeceDateKey, ingestionCadence, positionInsertQuery, shouldIngest } from "../vessel_ingestion_worker.mjs";
 
 test("disables ingestion overnight in Greece", () => {
   assert.equal(ingestionCadence(new Date("2026-08-05T20:30:00Z"), true), null);
@@ -10,8 +10,15 @@ test("uses five-minute cadence during a daytime regatta", () => {
   assert.equal(ingestionCadence(new Date("2026-08-05T10:00:00Z"), true), 300000);
 });
 
-test("uses hourly cadence during the day outside regattas", () => {
-  assert.equal(ingestionCadence(new Date("2026-08-05T10:00:00Z"), false), 3600000);
+test("uses 45-minute cadence during the day outside regattas", () => {
+  assert.equal(ingestionCadence(new Date("2026-08-05T10:00:00Z"), false), 2700000);
+});
+
+test("always ingests once at 22:00 Greece time", () => {
+  const tenPm = new Date("2026-08-05T19:00:00Z");
+  assert.equal(shouldIngest({ now: tenPm, lastRunAt: new Date("2026-08-05T18:30:00Z"), activeRace: false, mode: "live" }), true);
+  assert.equal(shouldIngest({ now: new Date("2026-08-05T19:04:00Z"), lastRunAt: tenPm, activeRace: false, mode: "live" }), false);
+  assert.equal(greeceDateKey(tenPm), "2026-08-05");
 });
 
 test("never ingests while mock mode is active", () => {

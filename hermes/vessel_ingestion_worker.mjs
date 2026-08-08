@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 
 const FLEET = ["247520340", "240576800", "240608700"];
 const FIVE_MINUTES = 5 * 60_000;
-const ONE_HOUR = 60 * 60_000;
+const FORTY_FIVE_MINUTES = 45 * 60_000;
 
 export function greeceHour(now) {
   return Number(new Intl.DateTimeFormat("en-GB", {
@@ -12,14 +12,33 @@ export function greeceHour(now) {
   }).format(now));
 }
 
+export function greeceDateKey(now) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Europe/Athens", year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(now);
+}
+
+export function greeceMinute(now) {
+  return Number(new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Athens", minute: "2-digit",
+  }).format(now));
+}
+
+function isTenPmRunDue(now, lastRunAt) {
+  const alreadyRanAtTen = lastRunAt && greeceDateKey(lastRunAt) === greeceDateKey(now) &&
+    greeceHour(lastRunAt) === 22 && greeceMinute(lastRunAt) < 5;
+  return greeceHour(now) === 22 && greeceMinute(now) < 5 && !alreadyRanAtTen;
+}
+
 export function ingestionCadence(now, activeRace) {
   const hour = greeceHour(now);
   if (hour >= 22 || hour < 8) return null;
-  return activeRace ? FIVE_MINUTES : ONE_HOUR;
+  return activeRace ? FIVE_MINUTES : FORTY_FIVE_MINUTES;
 }
 
 export function shouldIngest({ now, lastRunAt, activeRace, mode }) {
   if (mode !== "live") return false;
+  if (isTenPmRunDue(now, lastRunAt)) return true;
   const cadence = ingestionCadence(now, activeRace);
   if (cadence === null) return false;
   return !lastRunAt || now.getTime() - lastRunAt.getTime() >= cadence;

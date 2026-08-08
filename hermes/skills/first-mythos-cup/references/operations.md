@@ -183,12 +183,12 @@ beside the Hermes gateway on the same Fly VM. It does not use model context.
 It checks once per minute but contacts providers only when due:
 
 - Greece 22:00–08:00: disabled.
-- Greece daytime outside a stored active time window: hourly.
+- Greece daytime outside a stored active time window: every 45 minutes.
 - During a stored race time window: every five minutes.
 
 One cycle requests all three MMSIs and writes normalized rows to
 `vessel_positions`. MyShipTracking costs one credit per vessel, so the maximum
-ordinary-day budget is 42 credits and each regatta hour adds 36 credits.
+ordinary-day budget is 57 credits and each regatta hour adds 36 credits.
 `VESSEL_DATA_MODE=mock` is the hard cost gate and is currently active; the
 worker process stays alive but makes no provider calls. Never switch Fly to
 `VESSEL_DATA_MODE=live` without explicit owner authorization acknowledging this

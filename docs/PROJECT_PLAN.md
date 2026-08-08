@@ -35,4 +35,4 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 
 ## Cost guardrail
 
-The simple endpoint costs one credit per upstream call. The configured live schedule would cost up to 42 credits per non-regatta day (14 daytime hourly cycles × 3 boats), plus 36 credits per active regatta hour (12 cycles × 3 boats). The current `VESSEL_DATA_MODE=mock` setting makes zero MyShipTracking calls.
+The simple endpoint costs one credit per upstream call. The configured live schedule would cost up to 57 credits per non-regatta day (19 daytime 45-minute cycles × 3 boats), plus 36 credits per active regatta hour (12 cycles × 3 boats). The current `VESSEL_DATA_MODE=mock` setting makes zero MyShipTracking calls.
