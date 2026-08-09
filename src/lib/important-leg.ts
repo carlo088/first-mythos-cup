@@ -98,6 +98,23 @@ export function computeLegResults(leg: ImportantLeg, tracks: LegTrack[]): LegRes
   return results.map((result, index) => ({ ...result, rank: index + 1 }));
 }
 
+export function replayTimeline(leg: ImportantLeg, tracks: LegTrack[]) {
+  return [...new Set([
+    leg.startsAt,
+    ...tracks.flatMap((track) => track.points
+      .filter((point) => point.legId === leg.id)
+      .map((point) => point.receivedAt)),
+  ])].sort((a, b) => Date.parse(a) - Date.parse(b));
+}
+
+export function replayPoint(track: LegTrack, legId: string, replayAt: string) {
+  const racePoints = track.points
+    .filter((point) => point.legId === legId)
+    .sort((a, b) => Date.parse(a.receivedAt) - Date.parse(b.receivedAt));
+  const eligible = racePoints.filter((point) => Date.parse(point.receivedAt) <= Date.parse(replayAt));
+  return eligible[eligible.length - 1] ?? racePoints[0];
+}
+
 export function emptyTracks(): LegTrack[] {
   return FLEET.map((vessel) => ({ ...vessel, points: [] }));
 }
