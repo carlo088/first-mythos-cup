@@ -110,16 +110,17 @@ export function FleetMap({
 
       for (const { vessel, position } of vessels) {
         const replayTrack = tracks.find((track) => track.mmsi === vessel.mmsi);
-        const liveTrack = liveTracks.find((track) => track.mmsi === vessel.mmsi);
         const racePoints = pinnedLegId ? replayTrack?.points.filter((candidate) => candidate.legId === pinnedLegId) ?? [] : [];
         const eligiblePoints = replayAt ? racePoints.filter((candidate) => Date.parse(candidate.receivedAt) <= Date.parse(replayAt)) : racePoints;
         const isReplay = Boolean(pinnedLegId && replayAt && racePoints.length);
         const replayPoint = isReplay ? eligiblePoints[eligiblePoints.length - 1] ?? racePoints[0] : null;
-        const orderedLivePoints = [...(liveTrack?.points ?? [])].sort((a, b) => Date.parse(a.receivedAt) - Date.parse(b.receivedAt));
-        const livePoint = orderedLivePoints.at(-1) ?? null;
-        const point = replayPoint ?? livePoint;
-        const lat = point?.lat ?? position.lat;
-        const lng = point?.lng ?? position.lng;
+        // Live cards and markers must use the same authoritative position. The
+        // vessel endpoint may prefer a fresh provider report or a manual
+        // fallback, so independently choosing liveTrack's last point can
+        // place the marker away from the rendered track/card position.
+        const point = replayPoint ?? position;
+        const lat = point.lat;
+        const lng = point.lng;
         bounds.extend([lat, lng]);
         const direction = point?.course !== null && point?.course !== undefined
           ? point.course
