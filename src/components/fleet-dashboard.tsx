@@ -5,7 +5,7 @@ import { FleetMap, type MappedVessel } from "@/components/fleet-map";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import { FLEET, type FleetVessel } from "@/lib/vessels";
 import { sortLeaderboard, type LeaderboardEntry } from "@/lib/leaderboard";
-import { replayTimeline, type ImportantLeg, type LegResult, type LegTrack } from "@/lib/important-leg";
+import { type ImportantLeg, type LegResult, type LegTrack } from "@/lib/important-leg";
 
 export type Language = "en" | "it";
 
@@ -191,11 +191,10 @@ export function FleetDashboard({ language }: { language: Language }) {
     [legState],
   );
 
-  const selectedReplayLeg = legState.status === "ready" && pinnedLegId
-    ? legState.races.find((race) => race.leg.id === pinnedLegId)?.leg
-    : undefined;
-  const replayTimes = selectedReplayLeg ? replayTimeline(selectedReplayLeg, legState.status === "ready" ? legState.tracks : []) : [];
-  const replayAt = replayTimes[Math.min(replayIndex, Math.max(0, replayTimes.length - 1))];
+  const replayTimeline = legState.status === "ready" && pinnedLegId
+    ? [...new Set(legState.tracks.flatMap((track) => track.points.filter((point) => point.legId === pinnedLegId).map((point) => point.receivedAt)))].sort()
+    : [];
+  const replayAt = replayTimeline[Math.min(replayIndex, Math.max(0, replayTimeline.length - 1))];
 
   function togglePinnedRace(legId: string) {
     if (!legId) return;
@@ -225,7 +224,7 @@ export function FleetDashboard({ language }: { language: Language }) {
         language={language}
       />
       {legState.status === "ready" && <div className="replay-panel replay-panel-wide replay-under-map">
-        <label className="replay-range"><span className="visually-hidden">{copy.raceClock}</span><input aria-label={copy.raceClock} type="range" min={0} max={Math.max(0, replayTimes.length - 1)} value={Math.min(replayIndex, Math.max(0, replayTimes.length - 1))} disabled={!pinnedLegId} onChange={(event) => setReplayIndex(Number(event.target.value))} /></label>
+        <label className="replay-range"><span className="visually-hidden">{copy.raceClock}</span><input aria-label={copy.raceClock} type="range" min={0} max={Math.max(0, replayTimeline.length - 1)} value={Math.min(replayIndex, Math.max(0, replayTimeline.length - 1))} disabled={!pinnedLegId} onChange={(event) => setReplayIndex(Number(event.target.value))} /></label>
         <div className="replay-copy"><span className="section-number">02 / {copy.sharedTracker}</span><h3>{pinnedLegId ? mappedLegs.find((leg) => leg.id === pinnedLegId)?.name : copy.pinRace}</h3></div>
         <div className="replay-meta"><output>{replayAt ? `${new Date(replayAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC · ${language === "it" ? "TUTTE LE BARCHE" : "ALL BOATS"}` : copy.noRace}</output>{pinnedLegId && <button type="button" onClick={() => setPinnedLegId(null)}>{copy.unpinRace}</button>}</div>
       </div>}

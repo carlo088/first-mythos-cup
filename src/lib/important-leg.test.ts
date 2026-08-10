@@ -4,8 +4,6 @@ import {
   decimalDegrees,
   formatElapsed,
   PRIMA_REGATINA_ROUTE,
-  replayPoint,
-  replayTimeline,
   type ImportantLeg,
   type LegTrack,
 } from "./important-leg";
@@ -43,21 +41,5 @@ describe("important leg", () => {
 
   it("formats sub-hour elapsed times", () => {
     expect(formatElapsed(1620)).toBe("27:00");
-  });
-
-  it("starts replay at the leg start and then advances chronologically", () => {
-    const track: LegTrack = {
-      name: "Boat", mmsi: "1", color: "#000", points: [
-        { id: 3, mmsi: "1", lat: 3, lng: 3, course: 0, speedKnots: 1, receivedAt: "2026-08-05T18:20:00.000Z", legId: leg.id },
-        { id: 1, mmsi: "1", lat: 1, lng: 1, course: 0, speedKnots: 1, receivedAt: "2026-08-05T18:05:00.000Z", legId: leg.id },
-      ],
-    };
-    expect(replayTimeline(leg, [track])).toEqual([
-      leg.startsAt,
-      "2026-08-05T18:05:00.000Z",
-      "2026-08-05T18:20:00.000Z",
-    ]);
-    expect(replayPoint(track, leg.id, leg.startsAt)?.id).toBe(1);
-    expect(replayPoint(track, leg.id, "2026-08-05T18:20:00.000Z")?.id).toBe(3);
   });
 });

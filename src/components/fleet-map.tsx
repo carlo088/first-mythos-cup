@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { replayPoint, type ImportantLeg, type LegTrack } from "@/lib/important-leg";
+import type { ImportantLeg, LegTrack } from "@/lib/important-leg";
 import type { VesselPosition } from "@/lib/myshiptracking";
 import type { FleetVessel } from "@/lib/vessels";
 import type { Language } from "@/components/fleet-dashboard";
@@ -93,10 +93,9 @@ export function FleetMap({
       }
 
       for (const track of liveTracks) {
-        const points = [...track.points].sort((a, b) => Date.parse(a.receivedAt) - Date.parse(b.receivedAt));
-        for (let index = 1; index < points.length; index += 1) {
-          const previous = points[index - 1];
-          const current = points[index];
+        for (let index = 1; index < track.points.length; index += 1) {
+          const previous = track.points[index - 1];
+          const current = track.points[index];
           const segment: [number, number][] = [[previous.lat, previous.lng], [current.lat, current.lng]];
           segment.forEach((point) => bounds.extend(point));
           leaflet.polyline(segment, {
@@ -110,19 +109,15 @@ export function FleetMap({
 
       for (const { vessel, position } of vessels) {
         const replayTrack = tracks.find((track) => track.mmsi === vessel.mmsi);
-        const replayLeg = pinnedLegId ? legs.find((leg) => leg.id === pinnedLegId) : undefined;
-        const isReplay = Boolean(pinnedLegId && replayAt);
-        const selectedReplayPoint = isReplay && replayAt && replayTrack ? replayPoint(replayTrack, pinnedLegId!, replayAt) : undefined;
-        const replayStartPoint = isReplay && replayAt && replayLeg
-          ? { lat: replayLeg.start.lat, lng: replayLeg.start.lng, course: null, speedKnots: 0, receivedAt: replayAt }
-          : undefined;
-        // Live cards and markers must use the same authoritative position. The
-        // vessel endpoint may prefer a fresh provider report or a manual
-        // fallback, so independently choosing liveTrack's last point can
-        // place the marker away from the rendered track/card position.
-        const point = selectedReplayPoint ?? replayStartPoint ?? position;
-        const lat = point.lat;
-        const lng = point.lng;
+        const liveTrack = liveTracks.find((track) => track.mmsi === vessel.mmsi);
+        const racePoints = pinnedLegId ? replayTrack?.points.filter((candidate) => candidate.legId === pinnedLegId) ?? [] : [];
+        const eligiblePoints = replayAt ? racePoints.filter((candidate) => Date.parse(candidate.receivedAt) <= Date.parse(replayAt)) : racePoints;
+        const isReplay = Boolean(pinnedLegId && replayAt && racePoints.length);
+        const replayPoint = isReplay ? eligiblePoints[eligiblePoints.length - 1] ?? racePoints[0] : null;
+        const livePoint = liveTrack?.points[liveTrack.points.length - 1] ?? null;
+        const point = replayPoint ?? livePoint;
+        const lat = point?.lat ?? position.lat;
+        const lng = point?.lng ?? position.lng;
         bounds.extend([lat, lng]);
         const direction = point?.course !== null && point?.course !== undefined
           ? point.course
@@ -152,7 +147,9 @@ export function FleetMap({
   useEffect(() => {
     if (!pinnedLegId || !replayAt || !mapRef.current) return;
     for (const track of tracks) {
-      const point = replayPoint(track, pinnedLegId, replayAt);
+      const racePoints = track.points.filter((point) => point.legId === pinnedLegId);
+      const eligible = racePoints.filter((point) => Date.parse(point.receivedAt) <= Date.parse(replayAt));
+      const point = eligible[eligible.length - 1] ?? racePoints[0];
       const marker = markerRefs.current.get(track.mmsi);
       if (point && marker) marker.setLatLng([point.lat, point.lng]);
     }

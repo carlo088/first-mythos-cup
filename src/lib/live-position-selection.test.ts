@@ -24,7 +24,7 @@ const manualRow: LivePositionRow & Record<string, unknown> = {
 };
 
 describe("selectLivePositionRow", () => {
-  it("uses a manual position when MyShipTracking is stale", () => {
+  it("uses the manual Isera position when MyShipTracking is stale", () => {
     const result = selectLivePositionRow(
       [providerRow("2026-07-21T08:39:30Z"), manualRow],
       new Date("2026-08-08T10:20:00Z"),

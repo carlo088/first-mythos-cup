@@ -25,9 +25,11 @@ export async function GET(
       providerRows = await supabaseSelect<StoredPositionRow[]>(
         `vessel_positions?mmsi=eq.${mmsi}&source=eq.myshiptracking&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=2`,
       );
-      const manualRows = await supabaseSelect<StoredPositionRow[]>(
-        `vessel_positions?mmsi=eq.${mmsi}&source=eq.manual-user&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=1`,
-      );
+      const manualRows = mmsi === "247520340"
+        ? await supabaseSelect<StoredPositionRow[]>(
+          `vessel_positions?mmsi=eq.${mmsi}&source=eq.manual-user&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=1`,
+        )
+        : [];
       row = selectLivePositionRow([...providerRows, ...manualRows]);
     } else {
       const rows = await supabaseSelect<StoredPositionRow[]>(
