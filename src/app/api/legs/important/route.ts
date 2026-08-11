@@ -50,14 +50,22 @@ export async function GET() {
       track.points.push(point);
     }
     for (const position of liveRows) {
-      const track = liveTracks.find((candidate) => candidate.mmsi === position.mmsi);
-      if (!track) continue;
-      track.points.push({
+      const legId = legs.find((leg) => {
+        const receivedAt = Date.parse(position.received_at);
+        return receivedAt >= Date.parse(leg.startsAt) && receivedAt <= Date.parse(leg.endsAt);
+      })?.id ?? null;
+      const point: TrackPoint = {
         id: position.id, mmsi: position.mmsi,
         lat: position.latitude, lng: position.longitude,
         course: position.course, speedKnots: position.speed_knots,
-        receivedAt: position.received_at, legId: null,
-      });
+        receivedAt: position.received_at, legId,
+      };
+      const liveTrack = liveTracks.find((candidate) => candidate.mmsi === position.mmsi);
+      if (liveTrack) liveTrack.points.push(point);
+      if (legId) {
+        const replayTrack = tracks.find((candidate) => candidate.mmsi === position.mmsi);
+        if (replayTrack) replayTrack.points.push(point);
+      }
     }
     const races = legs.map((leg) => {
       const scores = scoreRows.filter((score) => score.leg_id === leg.id);
