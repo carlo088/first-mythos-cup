@@ -43,6 +43,8 @@ export type LegResult = {
   status: "finished" | "racing";
 };
 
+export type LegScore = { mmsi: string; points: number };
+
 export function decimalDegrees(degrees: number, minutes: number) {
   return degrees + minutes / 60;
 }
@@ -96,6 +98,14 @@ export function computeLegResults(leg: ImportantLeg, tracks: LegTrack[]): LegRes
     return a.elapsedSeconds - b.elapsedSeconds;
   });
   return results.map((result, index) => ({ ...result, rank: index + 1 }));
+}
+
+export function orderResultsByScores(results: LegResult[], scores: LegScore[]) {
+  const pointsByMmsi = new Map(scores.map((score) => [score.mmsi, score.points]));
+  return results
+    .filter((result) => pointsByMmsi.has(result.mmsi))
+    .sort((a, b) => (pointsByMmsi.get(b.mmsi)! - pointsByMmsi.get(a.mmsi)!) || a.name.localeCompare(b.name))
+    .map((result, index) => ({ ...result, rank: index + 1, status: "finished" as const }));
 }
 
 export function emptyTracks(): LegTrack[] {

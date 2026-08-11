@@ -3,6 +3,7 @@ import {
   computeLegResults,
   decimalDegrees,
   formatElapsed,
+  orderResultsByScores,
   PRIMA_REGATINA_ROUTE,
   type ImportantLeg,
   type LegTrack,
@@ -41,5 +42,14 @@ describe("important leg", () => {
 
   it("formats sub-hour elapsed times", () => {
     expect(formatElapsed(1620)).toBe("27:00");
+  });
+
+  it("uses recorded scores for a completed regata order", () => {
+    const results = computeLegResults(leg, [track("Isera", "isera", 27), track("Tiamat", "tiamat", 29)]);
+    const ordered = orderResultsByScores(results, [
+      { mmsi: "tiamat", points: 10 },
+      { mmsi: "isera", points: 5 },
+    ]);
+    expect(ordered.map((result) => result.name)).toEqual(["Tiamat", "Isera"]);
   });
 });

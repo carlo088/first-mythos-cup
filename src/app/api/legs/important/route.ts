@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { computeLegResults, emptyTracks, type ImportantLeg, type TrackPoint } from "@/lib/important-leg";
+import { computeLegResults, emptyTracks, orderResultsByScores, type ImportantLeg, type TrackPoint } from "@/lib/important-leg";
 import { supabaseSelect, type StoredPositionRow } from "@/lib/supabase-rest";
 
 export const runtime = "nodejs";
@@ -59,11 +59,15 @@ export async function GET() {
         receivedAt: position.received_at, legId: null,
       });
     }
-    const races = legs.map((leg) => ({
-      leg,
-      results: computeLegResults(leg, tracks),
-      scores: scoreRows.filter((score) => score.leg_id === leg.id),
-    }));
+    const races = legs.map((leg) => {
+      const scores = scoreRows.filter((score) => score.leg_id === leg.id);
+      const computedResults = computeLegResults(leg, tracks);
+      return {
+        leg,
+        results: scores.length > 0 ? orderResultsByScores(computedResults, scores) : computedResults,
+        scores,
+      };
+    });
     return NextResponse.json({ data: { races, tracks, liveTracks } });
   } catch (error) {
     console.error("Unable to load race legs", error);
