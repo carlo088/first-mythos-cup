@@ -67,6 +67,9 @@ export async function GET() {
         if (replayTrack) replayTrack.points.push(point);
       }
     }
+    for (const track of [...tracks, ...liveTracks]) {
+      track.points.sort((a, b) => Date.parse(a.receivedAt) - Date.parse(b.receivedAt));
+    }
     const races = legs.map((leg) => {
       const scores = scoreRows.filter((score) => score.leg_id === leg.id);
       const computedResults = computeLegResults(leg, tracks);
