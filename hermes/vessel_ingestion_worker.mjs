@@ -2,7 +2,7 @@
 
 import { pathToFileURL } from "node:url";
 
-const FLEET = ["247520340", "240576800", "240608700"];
+export const FLEET = ["247520340", "240576800"];
 const FIVE_MINUTES = 5 * 60_000;
 const FORTY_FIVE_MINUTES = 45 * 60_000;
 

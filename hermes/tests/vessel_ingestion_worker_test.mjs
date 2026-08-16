@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { greeceDateKey, ingestionCadence, positionInsertQuery, shouldIngest } from "../vessel_ingestion_worker.mjs";
+import { FLEET, greeceDateKey, ingestionCadence, positionInsertQuery, shouldIngest } from "../vessel_ingestion_worker.mjs";
+
+test("ingests only Isera and Fizzy", () => {
+  assert.deepEqual(FLEET, ["247520340", "240576800"]);
+  assert.equal(FLEET.includes("240608700"), false);
+});
 
 test("disables ingestion overnight in Greece", () => {
   assert.equal(ingestionCadence(new Date("2026-08-05T20:30:00Z"), true), null);
