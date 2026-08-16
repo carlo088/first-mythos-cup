@@ -33,4 +33,5 @@ test("upserts repeated provider reports by MMSI and received time", () => {
   assert.match(query, /on conflict \(mmsi, received_at\) do update/i);
   assert.match(query, /'2026-08-06T18:25:23Z'/);
   assert.match(query, /'2026-08-06T19:42:00Z'/);
+  assert.match(query, /'vesselapi'/);
 });

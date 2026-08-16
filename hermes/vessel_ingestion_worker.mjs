@@ -55,18 +55,28 @@ async function hasActiveRace(now, environment) {
 }
 
 async function fetchVessel(mmsi, environment) {
-  const url = new URL("https://api.myshiptracking.com/api/v2/vessel");
-  url.searchParams.set("mmsi", mmsi);
-  url.searchParams.set("response", "simple");
-  const response = await fetch(url, { headers: { "x-api-key": environment.MYSHIPTRACKING_API_KEY, Accept: "application/json" } });
+  const apiKey = environment.VESSELAPI_API_KEY;
+  if (!apiKey) throw new Error("VESSELAPI_API_KEY is missing");
+  const url = new URL(`https://api.vesselapi.com/v1/vessel/${mmsi}/position`);
+  url.searchParams.set("filter.idType", "mmsi");
+  const response = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" } });
   if (!response.ok) throw new Error(`vessel ${mmsi} HTTP ${response.status}`);
   const body = await response.json();
-  if (body.status !== "success" || !body.data) throw new Error(`vessel ${mmsi} returned no data`);
-  return body.data;
+  const position = body.vesselPosition;
+  if (!position) throw new Error(`vessel ${mmsi} returned no position`);
+  return {
+    mmsi: String(position.mmsi),
+    lat: position.latitude,
+    lng: position.longitude,
+    course: position.cog ?? 511,
+    speed: position.sog ?? 0,
+    nav_status: null,
+    received: position.timestamp,
+  };
 }
 
 export function positionInsertQuery(positions, capturedAt) {
-  const values = positions.map((position) => `(${sqlLiteral(String(position.mmsi))}, ${position.lat}, ${position.lng}, ${position.course === 511 ? "null" : position.course}, ${position.speed}, ${position.nav_status}, ${sqlLiteral(position.received)}, ${sqlLiteral(capturedAt)}, 'myshiptracking', null)`).join(",\n");
+  const values = positions.map((position) => `(${sqlLiteral(String(position.mmsi))}, ${position.lat}, ${position.lng}, ${position.course === 511 ? "null" : position.course}, ${position.speed}, ${position.nav_status ?? "null"}, ${sqlLiteral(position.received)}, ${sqlLiteral(capturedAt)}, 'vesselapi', null)`).join(",\n");
   return `insert into public.vessel_positions (mmsi, latitude, longitude, course, speed_knots, navigation_status, received_at, captured_at, source, leg_id) values ${values} on conflict (mmsi, received_at) do update set latitude=excluded.latitude, longitude=excluded.longitude, course=excluded.course, speed_knots=excluded.speed_knots, navigation_status=excluded.navigation_status, captured_at=excluded.captured_at, source=excluded.source;`;
 }
 

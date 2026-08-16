@@ -23,7 +23,7 @@ export async function GET(
     let providerRows: StoredPositionRow[] = [];
     if (process.env.VESSEL_DATA_MODE === "live") {
       providerRows = await supabaseSelect<StoredPositionRow[]>(
-        `vessel_positions?mmsi=eq.${mmsi}&source=eq.myshiptracking&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=2`,
+        `vessel_positions?mmsi=eq.${mmsi}&source=eq.vesselapi&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=captured_at.desc&limit=2`,
       );
       const manualRows = mmsi === "247520340"
         ? await supabaseSelect<StoredPositionRow[]>(

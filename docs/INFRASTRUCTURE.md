@@ -24,11 +24,12 @@ This file contains identifiers and status only. Secret values live exclusively i
 
 ## Vessel APIs
 
-- MyShipTracking: active production provider; the worker writes normalized
+- VesselAPI: active production provider; the worker writes normalized
   reports to Supabase and the app serves the latest stored report per vessel.
   A vessel's last-known report remains valid when its provider `received` time
   is old; the API marks that record stale rather than replacing it with
   simulation data.
+- MyShipTracking: legacy provider retained in `.env.local`; credentials currently rejected.
 - AISstream: credentials retained in `.env.local`, service currently considered down.
 - Global Fishing Watch: identity/registry fallback only; token is not yet configured.
 
