@@ -10,6 +10,7 @@ type LegRow = {
   start_latitude: number; start_longitude: number;
   end_latitude: number; end_longitude: number;
   checkpoint_latitude: number | null; checkpoint_longitude: number | null;
+  checkpoint_2_latitude: number | null; checkpoint_2_longitude: number | null;
   starts_at: string; ends_at: string; corridor_meters: number;
   status: ImportantLeg["status"];
 };
@@ -20,8 +21,12 @@ function normalizeLeg(row: LegRow): ImportantLeg {
     id: row.id, slug: row.slug, name: row.name,
     start: { lat: row.start_latitude, lng: row.start_longitude },
     end: { lat: row.end_latitude, lng: row.end_longitude },
-    checkpoints: row.checkpoint_latitude === null || row.checkpoint_longitude === null
-      ? [] : [{ lat: row.checkpoint_latitude, lng: row.checkpoint_longitude }],
+    checkpoints: [
+      row.checkpoint_latitude === null || row.checkpoint_longitude === null
+        ? null : { lat: row.checkpoint_latitude, lng: row.checkpoint_longitude },
+      row.checkpoint_2_latitude === null || row.checkpoint_2_longitude === null
+        ? null : { lat: row.checkpoint_2_latitude, lng: row.checkpoint_2_longitude },
+    ].filter((checkpoint): checkpoint is { lat: number; lng: number } => checkpoint !== null),
     startsAt: row.starts_at, endsAt: row.ends_at,
     corridorMeters: row.corridor_meters, status: row.status,
   };
