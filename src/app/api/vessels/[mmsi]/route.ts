@@ -4,6 +4,7 @@ import { storedRowToPosition, selectLivePositionRow, supabaseSelect, type Stored
 import { isKnownMmsi } from "@/lib/vessels";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(
   _request: Request,
