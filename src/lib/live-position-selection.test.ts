@@ -42,4 +42,14 @@ describe("selectLivePositionRow", () => {
 
     expect(result).toBe(freshProvider);
   });
+
+  it("selects fresh VesselAPI data", () => {
+    const freshProvider = { ...providerRow("2026-08-08T10:10:00Z"), source: "vesselapi" };
+    const result = selectLivePositionRow(
+      [freshProvider, manualRow],
+      new Date("2026-08-08T10:20:00Z"),
+    );
+
+    expect(result).toBe(freshProvider);
+  });
 });

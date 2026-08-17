@@ -10,7 +10,7 @@ function isStale(receivedAt: string, now: Date) {
 }
 
 export function selectLivePositionRow<T extends LivePositionRow>(rows: T[], now = new Date()) {
-  const providerRow = rows.find((row) => row.source === "myshiptracking");
+  const providerRow = rows.find((row) => ["myshiptracking", "vesselapi"].includes(row.source));
   const manualRow = rows.find((row) => row.source === "manual-user");
 
   if (!providerRow || isStale(providerRow.received_at, now)) return manualRow ?? providerRow;
