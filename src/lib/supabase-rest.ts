@@ -36,6 +36,16 @@ export async function supabaseSelect<T>(path: string): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+export async function supabaseSelectAll<T>(path: string, pageSize = 1000): Promise<T[]> {
+  const rows: T[] = [];
+  const separator = path.includes("?") ? "&" : "?";
+  for (let offset = 0; ; offset += pageSize) {
+    const page = await supabaseSelect<T[]>(`${path}${separator}limit=${pageSize}&offset=${offset}`);
+    rows.push(...page);
+    if (page.length < pageSize) return rows;
+  }
+}
+
 export function storedRowToPosition(row: StoredPositionRow, now = new Date()): VesselPosition {
   const vessel = fleetVessel(row.mmsi);
   const ageSeconds = Math.max(0, Math.floor((now.getTime() - Date.parse(row.received_at)) / 1000));

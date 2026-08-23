@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isKnownMmsi } from "@/lib/vessels";
 import { reconstructTrack, type ReconstructedPoint } from "@/lib/track-reconstruction";
-import { supabaseSelect, type StoredPositionRow } from "@/lib/supabase-rest";
+import { supabaseSelectAll, type StoredPositionRow } from "@/lib/supabase-rest";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url); const mmsi = url.searchParams.get("mmsi");
   const from = url.searchParams.get("from"); const to = url.searchParams.get("to");
   if (!mmsi || !isKnownMmsi(mmsi) || !validIso(from) || !validIso(to) || Date.parse(to!) <= Date.parse(from!)) return NextResponse.json({ error: "Invalid vessel or time range." }, { status: 400 });
-  const rows = await supabaseSelect<StoredPositionRow[]>(`vessel_positions?mmsi=eq.${mmsi}&received_at=gte.${encodeURIComponent(from!)}&received_at=lte.${encodeURIComponent(to!)}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id,reconstruction_id&order=received_at.asc`);
+  const rows = await supabaseSelectAll<StoredPositionRow>(`vessel_positions?mmsi=eq.${mmsi}&received_at=gte.${encodeURIComponent(from!)}&received_at=lte.${encodeURIComponent(to!)}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id,reconstruction_id&order=received_at.asc`);
   return NextResponse.json({ data: rows });
 }
 

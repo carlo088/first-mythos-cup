@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { computeLegResults, emptyTracks, orderResultsByScores, type ImportantLeg, type TrackPoint } from "@/lib/important-leg";
-import { supabaseSelect, type StoredPositionRow } from "@/lib/supabase-rest";
+import { supabaseSelect, supabaseSelectAll, type StoredPositionRow } from "@/lib/supabase-rest";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -36,8 +36,8 @@ export async function GET() {
   try {
     const [legRows, rows, liveRows, scoreRows] = await Promise.all([
       supabaseSelect<LegRow[]>("race_legs?select=*&order=starts_at.asc"),
-      supabaseSelect<StoredPositionRow[]>("vessel_positions?source=eq.important-leg-simulation&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.asc"),
-      supabaseSelect<StoredPositionRow[]>("vessel_positions?source=not.eq.important-leg-simulation&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.asc"),
+      supabaseSelectAll<StoredPositionRow>("vessel_positions?source=eq.important-leg-simulation&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.asc"),
+      supabaseSelectAll<StoredPositionRow>("vessel_positions?source=not.eq.important-leg-simulation&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id&order=received_at.asc"),
       supabaseSelect<LegScoreRow[]>("leg_scores?select=leg_id,mmsi,points"),
     ]);
     const legs = legRows.map(normalizeLeg);

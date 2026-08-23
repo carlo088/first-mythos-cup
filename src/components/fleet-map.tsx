@@ -93,12 +93,10 @@ export function FleetMap({
       }
 
       for (const track of liveTracks) {
-        for (let index = 1; index < track.points.length; index += 1) {
-          const previous = track.points[index - 1];
-          const current = track.points[index];
-          const segment: [number, number][] = [[previous.lat, previous.lng], [current.lat, current.lng]];
-          segment.forEach((point) => bounds.extend(point));
-          leaflet.polyline(segment, {
+        const line: [number, number][] = track.points.map((point) => [point.lat, point.lng]);
+        line.forEach((point) => bounds.extend(point));
+        if (line.length > 1) {
+          leaflet.polyline(line, {
             color: track.color,
             weight: 5,
             opacity: 0.9,
