@@ -207,10 +207,12 @@ export function FleetDashboard({ language }: { language: Language }) {
       />
       {legState.status === "error" && <div className="leaderboard-message error-card">{legState.message}</div>}
       {legState.status === "ready" && (
-        <div className="regattas-section">
-          <details className="regattas-dropdown">
-            <summary><span className="section-number">03 / {copy.races.toUpperCase()} · {legState.races.length}</span><h3>{copy.races}</h3><i>⌄</i></summary>
-            <div className="regatta-table" role="table" aria-label={copy.races}>
+        <section className="regattas-section" aria-labelledby="regattas-title">
+          <div className="regattas-heading">
+            <span className="section-number">03 / {copy.races.toUpperCase()} · {legState.races.length}</span>
+            <h3 id="regattas-title">{copy.races}</h3>
+          </div>
+          <div className="regatta-table" role="table" aria-label={copy.races}>
             <div className="regatta-row regatta-header" role="row"><span>{copy.status}</span><span>{copy.race}</span><span>{copy.startEnd}</span><span>{copy.arrivalOrder}</span></div>
             {legState.races.map((race) => {
               const isLive = race.leg.status === "active";
@@ -221,9 +223,8 @@ export function FleetDashboard({ language }: { language: Language }) {
                   <span className="compact-arrivals">{isLive ? copy.progress : race.results.map((result) => `${result.rank} ${result.name}`).join(" · ")}</span>
               </div>;
             })}
-            </div>
-          </details>
-        </div>
+          </div>
+        </section>
       )}
       <div className="detail-heading">
         <span className="section-number">04 / FIRST 36 FLEET</span>
