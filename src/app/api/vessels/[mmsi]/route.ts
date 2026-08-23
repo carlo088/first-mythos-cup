@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { VesselProviderError } from "@/lib/myshiptracking";
+import { publicPositionSourceFilter } from "@/lib/public-position-source";
 import { storedRowToPosition, supabaseSelect, type StoredPositionRow } from "@/lib/supabase-rest";
 import { isKnownMmsi } from "@/lib/vessels";
 
@@ -21,7 +22,7 @@ export async function GET(
 
   try {
     const rows = await supabaseSelect<StoredPositionRow[]>(
-      `vessel_positions?mmsi=eq.${mmsi}&source=eq.manual-reconstruction&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id,reconstruction_id&order=received_at.desc&limit=1`,
+      `vessel_positions?mmsi=eq.${mmsi}&${publicPositionSourceFilter(mmsi)}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id,reconstruction_id&order=received_at.desc&limit=1`,
     );
     const row = rows[0];
     if (!row) return NextResponse.json({ error: "Position unavailable." }, { status: 404 });

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { computeLegResults, emptyTracks, orderResultsByScores, type ImportantLeg, type TrackPoint } from "@/lib/important-leg";
+import { PUBLIC_TRACK_FILTERS } from "@/lib/public-position-source";
 import { supabaseSelect, supabaseSelectAll, type StoredPositionRow } from "@/lib/supabase-rest";
 
 export const runtime = "nodejs";
@@ -34,15 +35,16 @@ function normalizeLeg(row: LegRow): ImportantLeg {
 
 export async function GET() {
   try {
-    const [legRows, manualRows, scoreRows] = await Promise.all([
+    const [legRows, manualRows, tiamatProviderRows, scoreRows] = await Promise.all([
       supabaseSelect<LegRow[]>("race_legs?select=*&order=starts_at.asc"),
-      supabaseSelectAll<StoredPositionRow>("vessel_positions?source=eq.manual-reconstruction&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id,reconstruction_id&order=received_at.asc"),
+      supabaseSelectAll<StoredPositionRow>(`vessel_positions?${PUBLIC_TRACK_FILTERS[0]}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id,reconstruction_id&order=received_at.asc`),
+      supabaseSelectAll<StoredPositionRow>(`vessel_positions?${PUBLIC_TRACK_FILTERS[1]}&select=id,mmsi,latitude,longitude,course,speed_knots,navigation_status,received_at,captured_at,source,leg_id,reconstruction_id&order=received_at.asc`),
       supabaseSelect<LegScoreRow[]>("leg_scores?select=leg_id,mmsi,points"),
     ]);
     const legs = legRows.map(normalizeLeg);
     const tracks = emptyTracks();
     const liveTracks = emptyTracks();
-    for (const position of manualRows) {
+    for (const position of [...manualRows, ...tiamatProviderRows]) {
       const legId = legs.find((leg) => {
         const receivedAt = Date.parse(position.received_at);
         return receivedAt >= Date.parse(leg.startsAt) && receivedAt <= Date.parse(leg.endsAt);
