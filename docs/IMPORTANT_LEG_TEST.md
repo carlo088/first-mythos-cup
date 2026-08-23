@@ -12,7 +12,7 @@ The mock test uses the production-shaped pipeline: writer → `vessel_positions`
 
 The simulator writes spatially and temporally out-of-leg approach/departure points plus approximately seven leg positions per vessel for each of three races. Outside segments are dashed; segments whose endpoints carry the same `leg_id` are solid. These are accelerated 30-minute tests and do not run on a timer.
 
-The frontend only reads Supabase on initial load or manual reload. `hermes/vessel_ingestion_worker.mjs` is the independent Fly-side writer: no calls from 22:00–08:00 Greece time, hourly during the day, and every five minutes while the current time falls inside a stored race. It runs beside Hermes on the same VM, but `VESSEL_DATA_MODE=mock` keeps it disabled and spending zero credits until the owner explicitly enables live ingestion.
+The frontend only reads Supabase on initial load or manual reload. The historical Fly-side writer is now retired: `VESSEL_DATA_MODE=disabled` prevents its process from starting and spends zero credits. Re-enabling live ingestion requires explicit owner authorization.
 
 ## Data contract
 

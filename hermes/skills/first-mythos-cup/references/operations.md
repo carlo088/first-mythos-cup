@@ -203,13 +203,13 @@ It checks once per minute but contacts providers only when due:
 One cycle requests all three MMSIs and writes normalized rows to
 `vessel_positions`. MyShipTracking costs one credit per vessel, so the maximum
 ordinary-day budget is 57 credits and each regatta hour adds 36 credits.
-`VESSEL_DATA_MODE=mock` is the hard cost gate and is currently active; the
-worker process stays alive but makes no provider calls. Never switch Fly to
+`VESSEL_DATA_MODE=disabled` is the hard cost gate and is currently active; the
+gateway does not start the worker and makes no provider calls. Never switch Fly to
 `VESSEL_DATA_MODE=live` without explicit owner authorization acknowledging this
 budget and confirming the provider and Supabase secrets are present. After a
 mode change, verify the process and one aggregate cycle from logs without
 printing coordinates or credentials. To stop spending immediately, restore
-mock mode and restart the machine.
+disabled mode and restart the machine.
 
 ## Credential boundaries
 

@@ -7,7 +7,7 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 ## Provider logic
 
 1. The public app uses audited `manual-reconstruction` rows for Isera and Fizzy. Tiamat is the explicit exception: its marker and track use only stored `myshiptracking` or `vesselapi` AIS/provider rows, never manual positions. Other AIS/provider rows remain archived as repair references.
-2. MyShipTracking Vessel API v2 remains implemented behind an explicit `VESSEL_DATA_MODE=live` switch for future use.
+2. The cup is finished and all upstream tracking is hard-disabled with `VESSEL_DATA_MODE=disabled`. Provider integrations remain archived for possible future use, but Hermes must not enable them without explicit owner authorization.
 3. The app reads latest positions only through `GET /api/vessels/[mmsi]`, and leg history/results through `GET /api/legs/important`; both read Supabase.
 4. Validate the MMSI against the known race fleet before returning data or spending a provider credit.
 5. If live mode is explicitly enabled, cache successful upstream responses for at least `VESSEL_CACHE_SECONDS` (default 60 seconds).
@@ -36,4 +36,4 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 
 ## Cost guardrail
 
-The simple endpoint costs one credit per upstream call. The configured live schedule would cost up to 57 credits per non-regatta day (19 daytime 45-minute cycles × 3 boats), plus 36 credits per active regatta hour (12 cycles × 3 boats). The current `VESSEL_DATA_MODE=mock` setting makes zero MyShipTracking calls.
+The simple endpoint costs one credit per upstream call. `VESSEL_DATA_MODE=disabled` prevents the ingestion process from starting and therefore spends zero tracking credits. Historical app endpoints remain read-only Supabase consumers and never call a vessel provider.

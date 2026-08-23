@@ -36,13 +36,14 @@ This file contains identifiers and status only. Secret values live exclusively i
 ## Agent runtime
 
 - Hermes runtime: official `nousresearch/hermes-agent:latest` image on Fly, customized under `hermes/`.
-- Vessel scheduler: a separate lightweight Node child process in the same Fly
-  machine; live mode is enabled and its writes feed the same API used by the
-  mobile app.
+- Vessel scheduler: retired after the completed cup. `VESSEL_DATA_MODE=disabled`
+  prevents the Fly gateway from starting the worker, so no cron-like process or
+  vessel-provider call runs. Hermes remains online and the app serves stored
+  history from Supabase.
 - Persistent state: Fly volume `/opt/data`; credentials are protected in `/opt/data/.env` and mirrored from Fly secrets without logging values.
 - Fly receives the complete server environment required for autonomous
   operation, including Supabase management and database access. Provider keys
-  remain protected by application mode and cost gates: mock vessel mode makes
+  remain protected by application mode and cost gates: disabled vessel mode makes
   no paid MyShipTracking calls, and AISstream stays inactive until verified.
 - Telegram adapter: Hermes' native gateway with persistent pairing authorization.
 - Gateway status: running and verified with a direct model response. Telegram remains disabled until `TELEGRAM_BOT_TOKEN` and the owner's numeric `TELEGRAM_ALLOWED_USERS` value are supplied.

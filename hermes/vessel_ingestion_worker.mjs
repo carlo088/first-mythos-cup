@@ -90,6 +90,10 @@ async function storePositions(positions, environment) {
 }
 
 export async function runWorker(environment = process.env) {
+  if (environment.VESSEL_DATA_MODE !== "live") {
+    console.log("Vessel tracking is disabled; no provider calls will be made.");
+    return null;
+  }
   let lastRunAt = null;
   const tick = async () => {
     try {

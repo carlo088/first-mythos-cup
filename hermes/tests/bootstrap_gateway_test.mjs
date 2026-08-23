@@ -6,6 +6,7 @@ import {
   configureGitHubCredentialHelper,
   renderConfiguredModel,
   renderRuntimeDefaults,
+  shouldStartVesselWorker,
 } from "../bootstrap_gateway.mjs";
 
 test("syncs the complete server environment into persistent Hermes state", () => {
@@ -23,6 +24,13 @@ test("syncs the complete server environment into persistent Hermes state", () =>
     assert.equal(SYNC_KEYS.includes(key), true, `${key} must persist on Fly`);
   }
   assert.equal(SYNC_KEYS.includes("TELEGRAM_ALLOWED_USERS"), false);
+});
+
+test("starts vessel tracking only after an explicit live-mode switch", () => {
+  assert.equal(shouldStartVesselWorker({ VESSEL_DATA_MODE: "live" }), true);
+  assert.equal(shouldStartVesselWorker({ VESSEL_DATA_MODE: "disabled" }), false);
+  assert.equal(shouldStartVesselWorker({ VESSEL_DATA_MODE: "mock" }), false);
+  assert.equal(shouldStartVesselWorker({}), false);
 });
 
 test("enables native pairing for unauthorized Telegram DMs", () => {

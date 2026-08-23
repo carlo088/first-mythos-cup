@@ -60,9 +60,9 @@ Important fields:
 
 Only known fleet MMSIs are accepted. The response is normalized for the UI, includes `course: null` when the upstream reports `511`, and includes `stale` and `ageSeconds` fields.
 
-The application runs with `VESSEL_DATA_MODE=live`; the scheduled worker writes
-normalized MyShipTracking reports to the same `vessel_positions` table that
-every frontend reads. If a vessel stops transmitting, the API continues to
+The completed cup runs with `VESSEL_DATA_MODE=disabled`; the scheduled worker
+does not start and no vessel provider is called. The application serves stored
+`vessel_positions` history only. If a vessel stopped transmitting, the API continues to
 serve its last-known provider report and sets `stale` from the age of its
 `received` timestamp; it does not substitute simulation data or invent a newer
 AIS timestamp.

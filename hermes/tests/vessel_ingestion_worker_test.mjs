@@ -26,8 +26,8 @@ test("always ingests once at 22:00 Greece time", () => {
   assert.equal(greeceDateKey(tenPm), "2026-08-05");
 });
 
-test("never ingests while mock mode is active", () => {
-  assert.equal(shouldIngest({ now: new Date(), lastRunAt: null, activeRace: true, mode: "mock" }), false);
+test("never ingests while tracking is disabled", () => {
+  assert.equal(shouldIngest({ now: new Date(), lastRunAt: null, activeRace: true, mode: "disabled" }), false);
 });
 test("upserts repeated provider reports by MMSI and received time", () => {
   const query = positionInsertQuery([
