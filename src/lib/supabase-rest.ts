@@ -63,6 +63,6 @@ export function storedRowToPosition(row: StoredPositionRow, now = new Date()): V
     providerTimestamp: row.captured_at,
     ageSeconds,
     stale: ageSeconds > 15 * 60,
-    provider: row.source === "manual-user" ? "manual" : "supabase",
+    provider: ["manual-user", "manual-reconstruction"].includes(row.source) ? "manual" : "supabase",
   };
 }

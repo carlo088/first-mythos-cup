@@ -143,6 +143,9 @@ checks for speeds above 35 knots, and writes `manual-reconstruction` rows with
 an auditable `track_reconstructions` record. Original reports are never
 overwritten; timestamp conflicts are skipped. The write API is intentionally
 disabled in production until a proper admin-authentication flow exists.
+The public dashboard intentionally reads only `manual-reconstruction` rows;
+never reintroduce AIS, VesselAPI, `manual-user`, or simulation rows as a
+display fallback unless the owner explicitly changes this policy.
 
 ### Conversational race-management protocol
 

@@ -6,7 +6,7 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 
 ## Provider logic
 
-1. The active data mode is **Supabase position history**. Current test rows are written by the Prima Regatina simulator and make zero vendor calls.
+1. The public app uses only audited `manual-reconstruction` rows from Supabase for vessel markers, complete tracks, and race replay. AIS/provider rows remain archived only as repair references.
 2. MyShipTracking Vessel API v2 remains implemented behind an explicit `VESSEL_DATA_MODE=live` switch for future use.
 3. The app reads latest positions only through `GET /api/vessels/[mmsi]`, and leg history/results through `GET /api/legs/important`; both read Supabase.
 4. Validate the MMSI against the known race fleet before returning data or spending a provider credit.
