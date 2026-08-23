@@ -27,7 +27,7 @@ export async function POST(request: Request) {
   if (!body?.mmsi || !isKnownMmsi(body.mmsi) || !body.startsAt || !body.endsAt || !Array.isArray(body.controlPoints) || body.controlPoints.length < 2 || body.controlPoints.length > 100 || body.controlPoints.some((p) => !Number.isFinite(p.lat) || !Number.isFinite(p.lng) || Math.abs(p.lat) > 90 || Math.abs(p.lng) > 180)) return NextResponse.json({ error: "Invalid reconstruction." }, { status: 400 });
   let points: ReconstructedPoint[];
   try { points = reconstructTrack(body.controlPoints, body.startsAt, body.endsAt); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid reconstruction." }, { status: 400 }); }
-  if (points.length > 1000) return NextResponse.json({ error: "The interval is too long. Repair one missing sailing interval at a time." }, { status: 400 });
+  if (points.length > 5000) return NextResponse.json({ error: "The interval is too long. Repair one missing sailing interval at a time." }, { status: 400 });
   if (points.some((point) => point.speedKnots > 35)) return NextResponse.json({ error: "The route requires more than 35 knots. Adjust its time range or shape." }, { status: 400 });
   const projectRef = process.env.SUPABASE_PROJECT_REF; const token = process.env.SUPABASE_ACCESS_TOKEN;
   if (!projectRef || !token) return NextResponse.json({ error: "Supabase management access is not configured." }, { status: 503 });
