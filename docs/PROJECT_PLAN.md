@@ -32,6 +32,7 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 - [ ] Add the Telegram bot token and owner's numeric ID, then verify an end-to-end native Telegram reply.
 - [ ] Add observability for upstream calls, failures, cache effectiveness, and estimated credits.
 - [x] Remove the legacy stateless Vercel Hermes and Telegram routes after the Fly gateway is verified.
+- [x] Add a localhost-only track-repair editor for audited, non-destructive reconstruction of regatta and non-regatta sailing gaps.
 
 ## Cost guardrail
 

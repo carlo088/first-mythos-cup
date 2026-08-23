@@ -331,6 +331,25 @@ footer p { margin: 0; }
 .library-empty { grid-column: 1 / -1; margin: 0; padding: 30px; border: 1px dashed var(--line); color: #617685; font: 400 11px/1.6 "DM Mono", monospace; }
 .language-toggle { flex: 0 0 auto; color: var(--paper); border-color: rgba(255,255,255,.55); }
 .language-toggle:hover:not(:disabled) { color: var(--ink); background: var(--paper); border-color: var(--paper); }
+.repair-page { min-height: 100vh; padding: 32px; background: var(--paper); color: var(--ink); }
+.repair-header { max-width: 920px; margin: 0 auto 24px; }
+.repair-header span { font: 600 11px "DM Mono", monospace; letter-spacing: .12em; }
+.repair-header h1 { margin: 8px 0; font-size: clamp(42px, 7vw, 90px); line-height: .9; text-transform: uppercase; }
+.repair-header p { max-width: 650px; color: #566977; }
+.repair-controls, .repair-toolbar { max-width: 1180px; margin: 0 auto; display: grid; gap: 14px; }
+.repair-controls { grid-template-columns: 1fr 1.4fr 1.4fr auto; align-items: end; margin-bottom: 14px; }
+.repair-controls label, .repair-toolbar label { display: grid; gap: 6px; font: 600 10px "DM Mono", monospace; letter-spacing: .1em; text-transform: uppercase; }
+.repair-controls input, .repair-controls select, .repair-toolbar input { min-height: 44px; border: 1px solid #aab6bd; background: #fff; padding: 0 12px; color: var(--ink); }
+.repair-controls button, .repair-actions button { min-height: 44px; border: 1px solid var(--ink); background: transparent; padding: 0 16px; font-weight: 700; }
+.repair-map { max-width: 1180px; height: min(64vh, 720px); margin: 0 auto; border: 2px solid var(--ink); background: #dfe8e9; }
+.repair-control { display: grid; place-items: center; border-radius: 50%; background: #ff7a45; color: #fff; border: 2px solid var(--ink); font: 700 12px "DM Mono", monospace; box-shadow: 0 2px 8px #071a2b55; }
+.repair-toolbar { grid-template-columns: 1fr 1fr; padding: 18px; border: 2px solid var(--ink); border-top: 0; }
+.repair-toolbar > div:first-child { display: grid; gap: 5px; }
+.repair-toolbar span, .repair-toolbar p { color: #566977; font-size: 13px; }
+.repair-actions { display: flex; gap: 8px; flex-wrap: wrap; grid-column: 1 / -1; }
+.repair-actions .primary { background: var(--ink); color: #fff; margin-left: auto; }
+.repair-actions button:disabled { opacity: .35; }
+.repair-toolbar p { grid-column: 1 / -1; margin: 0; }
 
 @media (max-width: 850px) {
   .hero { min-height: 540px; }
@@ -348,6 +367,12 @@ footer p { margin: 0; }
 }
 
 @media (max-width: 560px) {
+  .repair-page { padding: 18px; }
+  .repair-controls { grid-template-columns: 1fr 1fr; }
+  .repair-controls label:first-child, .repair-controls button { grid-column: 1 / -1; }
+  .repair-map { height: 58vh; }
+  .repair-toolbar { grid-template-columns: 1fr; }
+  .repair-actions .primary { width: 100%; margin-left: 0; }
   .hero { min-height: 610px; padding-top: 20px; }
   h1 { font-size: clamp(62px, 19vw, 88px); }
   .boat-line { height: 300px; margin: -20px auto 0; justify-content: center; }

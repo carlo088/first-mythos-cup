@@ -133,6 +133,17 @@ Finished-race points live in `public.leg_scores`. Write one validated integer
 0–100 per leg/MMSI. Its trigger recalculates aggregate `public.vessel_scores`.
 Do not edit aggregate totals independently.
 
+### Historical track repair
+
+The owner can repair missing regatta or non-regatta sailing at `/repair` on a
+local development server. Select Isera or Fizzy plus one missing time interval,
+load existing reports, and click ordered sea-route control points. The server
+smooths the route, generates five-minute timestamps by cumulative distance,
+checks for speeds above 35 knots, and writes `manual-reconstruction` rows with
+an auditable `track_reconstructions` record. Original reports are never
+overwritten; timestamp conflicts are skipped. The write API is intentionally
+disabled in production until a proper admin-authentication flow exists.
+
 ### Conversational race-management protocol
 
 The owner can operate races in normal language over Telegram. Be helpful with

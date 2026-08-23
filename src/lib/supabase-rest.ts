@@ -16,6 +16,7 @@ export type StoredPositionRow = {
   captured_at: string;
   source: string;
   leg_id: string | null;
+  reconstruction_id?: string | null;
 };
 
 export function supabaseConfig() {
