@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   if (!localOnly()) return NextResponse.json({ error: "Track repair is available on localhost only." }, { status: 403 });
   const body = await request.json().catch(() => null) as { mmsi?: string; startsAt?: string; endsAt?: string; controlPoints?: Array<{ lat: number; lng: number }>; note?: string } | null;
-  if (!body?.mmsi || !isKnownMmsi(body.mmsi) || !body.startsAt || !body.endsAt || !Array.isArray(body.controlPoints) || body.controlPoints.length < 2 || body.controlPoints.length > 100 || body.controlPoints.some((p) => !Number.isFinite(p.lat) || !Number.isFinite(p.lng) || Math.abs(p.lat) > 90 || Math.abs(p.lng) > 180)) return NextResponse.json({ error: "Invalid reconstruction." }, { status: 400 });
+  if (!body?.mmsi || !isKnownMmsi(body.mmsi) || !body.startsAt || !body.endsAt || !Array.isArray(body.controlPoints) || body.controlPoints.length < 2 || body.controlPoints.length > 500 || body.controlPoints.some((p) => !Number.isFinite(p.lat) || !Number.isFinite(p.lng) || Math.abs(p.lat) > 90 || Math.abs(p.lng) > 180)) return NextResponse.json({ error: "Invalid reconstruction. Use between 2 and 500 valid control points." }, { status: 400 });
   let points: ReconstructedPoint[];
   try { points = reconstructTrack(body.controlPoints, body.startsAt, body.endsAt); } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Invalid reconstruction." }, { status: 400 }); }
   if (points.length > 5000) return NextResponse.json({ error: "The interval is too long. Repair one missing sailing interval at a time." }, { status: 400 });

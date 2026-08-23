@@ -192,7 +192,7 @@ button:disabled { opacity: .55; cursor: wait; }
 .regattas-dropdown > summary i { color: var(--blue); font-size: 22px; font-style: normal; transition: transform .2s; }
 .regattas-dropdown[open] > summary i { transform: rotate(180deg); }
 .regatta-table { border-top: 1px solid var(--ink); }
-.regatta-row { display: grid; grid-template-columns: 78px 1.05fr 1.1fr 1.25fr 66px; align-items: center; gap: 15px; width: 100%; min-height: 72px; padding: 0 18px; border: 0; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.6); text-align: left; }
+.regatta-row { display: grid; grid-template-columns: 78px 1.05fr 1.1fr 1.25fr; align-items: center; gap: 15px; width: 100%; min-height: 72px; padding: 0 18px; border: 0; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.6); text-align: left; }
 .regatta-header { min-height: 38px; color: #718392; background: transparent; font: 400 9px "DM Mono", monospace; letter-spacing: .11em; text-transform: uppercase; }
 .regatta-trigger { color: var(--ink); text-transform: none; }
 .regatta-trigger:hover { color: var(--ink) !important; background: rgba(255,255,255,.95) !important; }
@@ -346,6 +346,7 @@ footer p { margin: 0; }
 .repair-toolbar { grid-template-columns: 1fr 1fr; padding: 18px; border: 2px solid var(--ink); border-top: 0; }
 .repair-toolbar > div:first-child { display: grid; gap: 5px; }
 .repair-toolbar span, .repair-toolbar p { color: #566977; font-size: 13px; }
+.repair-status { grid-column: 1 / -1; padding: 12px 14px; border-left: 4px solid var(--blue); background: #fff; color: var(--ink) !important; font-weight: 700; }
 .repair-actions { display: flex; gap: 8px; flex-wrap: wrap; grid-column: 1 / -1; }
 .repair-actions .primary { background: var(--ink); color: #fff; margin-left: auto; }
 .repair-actions button:disabled { opacity: .35; }
@@ -362,7 +363,7 @@ footer p { margin: 0; }
   .library-layout { grid-template-columns: 1fr; }
   .library-intro { text-align: left; }
   .race-scoring { grid-template-columns: 1fr; }
-  .regatta-row { grid-template-columns: 70px minmax(100px, 1fr) minmax(130px, 1fr) minmax(130px, 1.2fr) 62px; }
+  .regatta-row { grid-template-columns: 70px minmax(100px, 1fr) minmax(130px, 1fr) minmax(130px, 1.2fr); }
   .regatta-arrivals ol { flex-wrap: wrap; }
 }
 
@@ -387,12 +388,11 @@ footer p { margin: 0; }
   .leg-banner { align-items: start; flex-direction: column; }
   .leg-banner p { text-align: left; }
   .regatta-header { display: none; }
-  .regatta-flat-row { grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: repeat(4, auto); align-items: start; min-height: 0; padding: 15px 12px; gap: 8px 12px; }
+  .regatta-flat-row { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(4, auto); align-items: start; min-height: 0; padding: 15px 12px; gap: 8px 12px; }
   .regatta-flat-row > .race-status { grid-column: 1; grid-row: 1; }
   .regatta-flat-row > strong { grid-column: 1; grid-row: 2; }
   .regatta-flat-row > .regatta-times { grid-column: 1; grid-row: 3; }
   .regatta-flat-row > .compact-arrivals { grid-column: 1; grid-row: 4; }
-  .regatta-flat-row > button { grid-column: 2; grid-row: 1 / span 4; align-self: start; }
   .regatta-detail { grid-template-columns: 1fr; padding: 18px 12px; }
   .detail-heading { align-items: start; flex-direction: column; }
   .library-form { padding: 18px; }

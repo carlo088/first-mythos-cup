@@ -24,7 +24,7 @@ Build a public, mobile-friendly live race tracker for Isera, Fizzy, and Tiamat. 
 - [x] Persist the saved snapshot in Supabase with an idempotent migration and public-read RLS.
 - [x] Prepare the official persistent Hermes Agent image, Fly configuration, protected secret bootstrap, and project skill.
 - [x] Add native Telegram gateway instructions and guarded persistent pairing management.
-- [x] Add the multi-race map, full tracks, automatic in-leg styling, single pinned-race shared replay clock, and computed results.
+- [x] Add the multi-race map, reconstructed full tracks, automatic in-leg styling, race archive, and computed results. The interactive pin/replay tracker was later removed.
 - [x] Give Hermes a durable conversational protocol for incomplete race setup, time corrections, finish reports, and manual score updates.
 - [x] Add a Greece-time scheduled ingestion worker beside Hermes, guarded by `VESSEL_DATA_MODE=live`; keep mock mode active until live credit spending is approved.
 - [x] Connect GitHub to Vercel and deploy the dashboard/API at `first-mythos-cup.vercel.app`.

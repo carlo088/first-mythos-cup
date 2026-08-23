@@ -56,15 +56,13 @@ const NAV_STATUS: Record<Language, Record<number, string>> = {
 const COPY = {
   en: {
     map: "Map", reload: "Refresh live data", loading: "Loading…", history: "LIVE AIS TELEMETRY · LAST-KNOWN POSITIONS · RECEIVED TIME SHOWN",
-    sharedTracker: "SHARED TRACKER", pinRace: "Pin a regata to replay", noRace: "No regata pinned", unpinRace: "Unpin active regata", raceClock: "Shared race clock",
-    races: "Regate", status: "Status", race: "Regata", startEnd: "Start / End", arrivalOrder: "Arrival order", points: "Points", live: "Live", ended: "Ended", progress: "In progress", pin: "Pin", unpin: "Unpin",
+    races: "Regate", status: "Status", race: "Regata", startEnd: "Start / End", arrivalOrder: "Arrival order", points: "Points", live: "Live", ended: "Ended", progress: "In progress",
     leaderboard: "Leaderboard", loadingPoints: "Loading points…", pointsUnavailable: "Points unavailable right now.", rank: "Rank", vessel: "Vessel", lastReport: "Last report", totalPoints: "Total points", staleAis: "Stale AIS", aisReceived: "AIS received", reportUnavailable: "Report unavailable",
     reports: "VESSEL REPORTS", telemetry: "Last-known telemetry", checked: "Dashboard checked at", supabaseTrack: "AIS history", manualPosition: "Manual position", staleReport: "Stale report", speed: "Speed", course: "Course", vesselStatus: "Status", lastPosition: "Last position", unavailable: "Position unavailable", ais: "AIS",
   },
   it: {
     map: "Mappa", reload: "Aggiorna dati live", loading: "Caricamento…", history: "TELEMETRIA AIS LIVE · ULTIME POSIZIONI NOTE · ORARIO DI RICEZIONE VISIBILE",
-    sharedTracker: "TRACCIATORE CONDIVISO", pinRace: "Seleziona una regata", noRace: "Nessuna regata selezionata", unpinRace: "Rimuovi selezione", raceClock: "Cronometro condiviso",
-    races: "Regate", status: "Stato", race: "Regata", startEnd: "Inizio / Fine", arrivalOrder: "Ordine d'arrivo", points: "Punti", live: "In corso", ended: "Conclusa", progress: "In corso", pin: "Seleziona", unpin: "Rimuovi",
+    races: "Regate", status: "Stato", race: "Regata", startEnd: "Inizio / Fine", arrivalOrder: "Ordine d'arrivo", points: "Punti", live: "In corso", ended: "Conclusa", progress: "In corso",
     leaderboard: "Classifica", loadingPoints: "Caricamento punti…", pointsUnavailable: "Punti non disponibili al momento.", rank: "Pos.", vessel: "Barca", lastReport: "Ultimo rapporto", totalPoints: "Punti totali", staleAis: "AIS non aggiornato", aisReceived: "AIS ricevuto", reportUnavailable: "Rapporto non disponibile",
     reports: "RAPPORTI BARCHE", telemetry: "Ultima telemetria disponibile", checked: "Pannello aggiornato alle", supabaseTrack: "Storico AIS", manualPosition: "Posizione manuale", staleReport: "Rapporto non aggiornato", speed: "Velocità", course: "Rotta", vesselStatus: "Stato", lastPosition: "Ultima posizione", unavailable: "Posizione non disponibile", ais: "AIS",
   },
@@ -137,8 +135,6 @@ export function FleetDashboard({ language }: { language: Language }) {
   const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardState>({ status: "loading" });
   const [legState, setLegState] = useState<LegState>({ status: "loading" });
-  const [pinnedLegId, setPinnedLegId] = useState<string | null>(null);
-  const [replayIndex, setReplayIndex] = useState(0);
 
   const loadFleet = useCallback(async () => {
     setRefreshing(true);
@@ -168,7 +164,6 @@ export function FleetDashboard({ language }: { language: Language }) {
       const body = (await response.json()) as { data?: { races: RaceArchiveEntry[]; tracks: LegTrack[]; liveTracks: LegTrack[] }; error?: string };
       if (!response.ok || !body.data) throw new Error(body.error || "Leg unavailable");
       setLegState({ status: "ready", ...body.data });
-      setPinnedLegId((current) => current && body.data!.races.some((race) => race.leg.id === current) ? current : null);
     } catch (error) {
       setLegState({ status: "error", message: error instanceof Error ? error.message : "Leg unavailable" });
     }
@@ -191,17 +186,6 @@ export function FleetDashboard({ language }: { language: Language }) {
     [legState],
   );
 
-  const replayTimeline = legState.status === "ready" && pinnedLegId
-    ? [...new Set(legState.tracks.flatMap((track) => track.points.filter((point) => point.legId === pinnedLegId).map((point) => point.receivedAt)))].sort()
-    : [];
-  const replayAt = replayTimeline[Math.min(replayIndex, Math.max(0, replayTimeline.length - 1))];
-
-  function togglePinnedRace(legId: string) {
-    if (!legId) return;
-    setPinnedLegId((current) => current === legId ? null : legId);
-    setReplayIndex(0);
-  }
-
   return (
     <section className="fleet-section" aria-labelledby="fleet-title">
       <div className="section-heading">
@@ -219,22 +203,15 @@ export function FleetDashboard({ language }: { language: Language }) {
         legs={mappedLegs}
         tracks={legState.status === "ready" ? legState.tracks : []}
         liveTracks={legState.status === "ready" ? legState.liveTracks : []}
-        pinnedLegId={pinnedLegId}
-        replayAt={replayAt}
         language={language}
       />
-      {legState.status === "ready" && <div className="replay-panel replay-panel-wide replay-under-map">
-        <label className="replay-range"><span className="visually-hidden">{copy.raceClock}</span><input aria-label={copy.raceClock} type="range" min={0} max={Math.max(0, replayTimeline.length - 1)} value={Math.min(replayIndex, Math.max(0, replayTimeline.length - 1))} disabled={!pinnedLegId} onChange={(event) => setReplayIndex(Number(event.target.value))} /></label>
-        <div className="replay-copy"><span className="section-number">02 / {copy.sharedTracker}</span><h3>{pinnedLegId ? mappedLegs.find((leg) => leg.id === pinnedLegId)?.name : copy.pinRace}</h3></div>
-        <div className="replay-meta"><output>{replayAt ? `${new Date(replayAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC · ${language === "it" ? "TUTTE LE BARCHE" : "ALL BOATS"}` : copy.noRace}</output>{pinnedLegId && <button type="button" onClick={() => setPinnedLegId(null)}>{copy.unpinRace}</button>}</div>
-      </div>}
       {legState.status === "error" && <div className="leaderboard-message error-card">{legState.message}</div>}
       {legState.status === "ready" && (
         <div className="regattas-section">
           <details className="regattas-dropdown">
             <summary><span className="section-number">03 / {copy.races.toUpperCase()} · {legState.races.length}</span><h3>{copy.races}</h3><i>⌄</i></summary>
             <div className="regatta-table" role="table" aria-label={copy.races}>
-            <div className="regatta-row regatta-header" role="row"><span>{copy.status}</span><span>{copy.race}</span><span>{copy.startEnd}</span><span>{copy.arrivalOrder}</span><span /></div>
+            <div className="regatta-row regatta-header" role="row"><span>{copy.status}</span><span>{copy.race}</span><span>{copy.startEnd}</span><span>{copy.arrivalOrder}</span></div>
             {legState.races.map((race) => {
               const isLive = race.leg.status === "active";
               return <div className="regatta-row regatta-flat-row" role="row" key={race.leg.id}>
@@ -242,7 +219,6 @@ export function FleetDashboard({ language }: { language: Language }) {
                   <strong>{race.leg.name}</strong>
                   <span className="regatta-times"><time>{new Date(race.leg.startsAt).toLocaleString([], { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "UTC" })}</time><time>{new Date(race.leg.endsAt).toLocaleString([], { hour: "2-digit", minute: "2-digit", timeZone: "UTC" })} UTC</time></span>
                   <span className="compact-arrivals">{isLive ? copy.progress : race.results.map((result) => `${result.rank} ${result.name}`).join(" · ")}</span>
-                  <button type="button" className={pinnedLegId === race.leg.id ? "is-pinned" : ""} onClick={() => togglePinnedRace(race.leg.id)}>{pinnedLegId === race.leg.id ? copy.unpin : copy.pin}</button>
               </div>;
             })}
             </div>
